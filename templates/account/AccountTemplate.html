@@ -1,0 +1,72 @@
+            <ul class="nav nav-tabs account-menu">
+                <li id="account-btn" class="active">
+                    <a href="#/Account">Account</a>
+                </li>
+                <% if(level == "admin") { %>
+                    <li id="admin-btn">
+                        <a href="#/Admin">Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(level == "superadmin") { %>
+                    <li id="superadmin-btn">
+                        <a href="#/SuperAdmin">Super Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(level == "clusterlead") { %>
+                    <li id="clusterlead-btn">
+                        <a href="#/ClusterLead">Cluster Lead Panel</a>
+                    </li>
+                <% } %>
+            </ul>
+            <div class="userpanel">
+                <div id="account" class="white">
+                    <dl class="account-info">
+                        <dt><legend>Name</legend></dt>
+                        <dd>
+                            <%= realname %><br />
+                            <small class="muted">Not <%= realname %>? <a href="#/Logout">Sign Out</a></small>
+                        </dd>
+                        <dt><legend>Username</legend></dt>
+                        <dd>
+                            <%= name %>
+                        </dd>
+                        <dt><legend>Institution</legend></dt>
+                        <dd>
+                            <%= institutionName %><br />
+                            <small class="muted"><a href="<%= institutionUrl %>" target="_blank"><%= institutionUrl %></a></small>
+                        </dd>
+                        <dt><legend>Email</legend></dt>
+                        <dd>
+                            <%= email %>
+                        </dd>
+                        <dt><legend>Phone</legend></dt>
+                        <dd>
+                            <%= phone %>
+                        </dd>
+                        <!-- <dt><legend>Change Password</legend></dt>
+                        <dd>
+                            <form id="changepass" accept-charset="UTF-8">
+                                <fieldset>
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input id="oldpass" type="password" name="oldpass" placeholder="Current Password" required tabindex="1" />
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input id="password" type="password" name="password" placeholder="Password" required tabindex="2" />
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <input id="confirm" type="password" name="confirm" placeholder="Confirm Password" required tabindex="3" />
+                                        </div>
+                                    </div>
+
+                                    <input id="login" class="btn btn-primary" type="submit" name="commit" value="Change Password" />
+                                </fieldset>
+                            </form> -->
+                        </dd>
+                    </dl>
+                </div>
+            </div>

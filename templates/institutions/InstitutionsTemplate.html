@@ -1,0 +1,22 @@
+<h1>Participating Institutions</h1>
+<table class="table striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% _.each(institutions, function(institution) { %>
+            <tr>
+                <td style="width: 23%;"><a href="<%= institution.get('url') %>"><%= institution.get('name') %></a></td>
+                <td><%= institution.get('description') %></td>
+                <% if(institution.get('admin')) { %>
+                    <td style="width: 23%;">Contact <a href="mailto:<%= institution.get('admin').email %>"><%= institution.get('admin').realname %></a> to join.</td>
+                <% } else { %>
+                    <td style="width: 23%;"><a href="#/Contact">Contact Us</a> to request admin permissions for this institution.</td>
+                <% } %>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>

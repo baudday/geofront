@@ -1,0 +1,437 @@
+/* ==================== Main colors ==================== */
+/* ==================== Alternate colors ==================== */
+/* ==================== Font families ===================*/
+/* ==================== Font sizes ===================*/
+body,
+html {
+  padding: 0;
+  margin: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: Rockwell, "Courier New", Courier, Georgia, Times, "Times New Roman", serif;
+  text-transform: lowercase;
+  font-weight: normal;
+}
+a:link,
+a:hover,
+a:visited {
+  color: #019547;
+}
+/* ==================== Customizing Bootstrap here ==================== */
+.navbar-inner {
+  background: #414042;
+  border-radius: 0px;
+}
+.navbar .nav .active > a {
+  background: 0 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+.navbar .nav > li > a {
+  color: #ffffff !important;
+  text-shadow: none !important;
+  line-height: 30px;
+}
+.navbar .btn-navbar {
+  background-color: #414042;
+  *background-color: #414042;
+  text-shadow: none;
+  background-image: none;
+  background-repeat: none;
+  border-color: none;
+  filter: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar .btn-navbar:hover,
+.navbar .btn-navbar:focus,
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active,
+.navbar .btn-navbar.disabled,
+.navbar .btn-navbar[disabled] {
+  color: #ffffff;
+  background-color: #414042;
+  *background-color: #414042;
+}
+.navbar .btn-navbar:active,
+.navbar .btn-navbar.active {
+  background-color: #414042;
+}
+.navbar .btn-navbar .icon-bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background-color: #f5f5f5;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar .nav > li > .dropdown-menu:before {
+  position: absolute;
+  top: -7px;
+  left: 9px;
+  display: inline-block;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #ccc;
+  border-left: 7px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  content: '';
+}
+.navbar .brand {
+  background: url(images/logo_wt.png) no-repeat left center;
+  width: 340px;
+  height: 50px;
+  padding: 0px;
+  margin: 0px;
+  padding: 0px 0px 0px;
+  line-height: 1;
+}
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #ffffff;
+  background-color: #231f20;
+}
+.navbar .nav .dropdown-toggle .caret {
+  margin-top: 12px;
+}
+.navbar .nav li.dropdown > .dropdown-toggle .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+.navbar .nav li.dropdown.open > .dropdown-toggle .caret,
+.navbar .nav li.dropdown.active > .dropdown-toggle .caret,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+.navbar .nav li.dropdown > a:hover .caret,
+.navbar .nav li.dropdown > a:focus .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+.dropdown-menu li > a:hover,
+.dropdown-menu li > a:focus,
+.dropdown-submenu:hover > a,
+.nav-collapse .nav > a:hover,
+.nav-collapse .nav > a:focus,
+.nav-collapse .nav:hover > a {
+  background-image: none;
+  background-color: #414042;
+}
+.nav-tabs > li > a,
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+  color: #019547;
+}
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
+.nav-tabs > .active > a:focus {
+  color: #414042;
+}
+.btn {
+  font-family: Rockwell, "Courier New", Courier, Georgia, Times, "Times New Roman", serif;
+  text-transform: lowercase;
+  *zoom: 1;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #ffffff;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  background-color: #019547;
+  background-image: none;
+  background-repeat: none;
+  border-color: #414042;
+  *background-color: #019547;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+  filter: none;
+  border: 1px solid #414042;
+  *border: 0;
+  border-bottom-color: #414042;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  *margin-left: .3em;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
+  color: #ffffff;
+  background-color: #019547;
+  *background-color: #019547;
+}
+.btn:active,
+.btn.active {
+  background-color: #019547;
+}
+.btn-primary {
+  text-shadow: none;
+}
+form .btn-primary {
+  width: 220px;
+}
+/* ==================== End customizing Bootstrap elements ==================== */
+.body {
+  margin-top: 10px;
+}
+#map {
+  width: 100%;
+  height: 100%;
+}
+.leaflet-container {
+  background: #ffffff;
+}
+.hero {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  padding: 0px 0px 100px 10px;
+}
+#map-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  z-index: -10;
+}
+.white {
+  background: #ffffff;
+  padding: 10px;
+  border: 1px solid #dddddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+}
+.panes-container {
+  width: 100%;
+}
+.info-pane {
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  padding: 0;
+  margin: 0;
+  background-color: #019547;
+  color: #ffffff;
+}
+.info-pane-content {
+  height: 0;
+  overflow: auto;
+  background-color: #ffffff;
+  color: #231f20;
+}
+.info-pane-title {
+  text-align: center;
+  width: 100%;
+  height: 42px;
+  padding: 5px 0;
+  line-height: 41px;
+}
+#form-div {
+  padding-top: 20px;
+  padding-right: 20px;
+}
+.account-menu {
+  margin: 0;
+}
+#log-pane {
+  display: none;
+}
+/* Homepage stuff */
+#video {
+  height: 480px;
+  background: #414042;
+  text-align: center;
+}
+#my_video_1 {
+  width: 480px;
+  height: 480px;
+}
+#about {
+  height: 480px;
+  background: #414042;
+  text-align: center;
+}
+#about h1 {
+  color: #019547;
+}
+#about p {
+  color: #ffffff;
+}
+#about h1,
+p {
+  margin: 10px;
+}
+#banner {
+  position: relative;
+  margin-bottom: 20px;
+}
+#homemap {
+  height: 400px;
+}
+#homeinfo {
+  height: 380px;
+  background: url('images/bg.png');
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  padding: 10px 30px;
+  color: #ffffff;
+}
+#homeinfo ul {
+  list-style-type: none;
+}
+#locationfilters {
+  width: 100%;
+  text-align: center;
+}
+.mapfilter {
+  margin: 5px;
+  cursor: pointer;
+}
+.loc-img {
+  float: right;
+  padding: 0 5px;
+}
+.expand-contact {
+  color: #019547;
+  cursor: pointer;
+}
+.contact {
+  display: none;
+}
+.map-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.map-menu ul li {
+  display: inline;
+  margin: 0px;
+  padding: 16px;
+  padding-bottom: 18px;
+  cursor: pointer;
+  border-right: 1px solid #017c3b;
+}
+.map-menu ul li:last-child {
+  border-right: none;
+}
+.content {
+  display: none;
+}
+/* ==================== Responsive Stuff ==================== */
+@media (max-width: 979px) {
+  body {
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3 {
+    line-height: 30px;
+  }
+  h1 {
+    font-size: 28.5px;
+  }
+  h2 {
+    font-size: 21.5px;
+  }
+  h3 {
+    font-size: 14.5px;
+  }
+  h5 {
+    font-size: 4px;
+  }
+  .nav-collapse .nav > li > a:hover,
+  .nav-collapse .nav > li > a:focus,
+  .nav-collapse .dropdown-menu a:hover,
+  .nav-collapse .dropdown-menu a:focus {
+    background-color: #231f20;
+  }
+  #about,
+  #homemap {
+    height: 350px;
+  }
+  #video {
+    height: 350px;
+    margin-bottom: 5px;
+  }
+  #my_video_1 {
+    height: 100%;
+    width: 100%;
+  }
+  #homeinfo {
+    height: 330px;
+  }
+  #banner {
+    margin-top: 5px;
+  }
+  .info-pane {
+    width: 100%;
+    left: 0;
+  }
+}
+@media (max-width: 480px) {
+  body {
+    overflow-x: hidden;
+  }
+  input,
+  select,
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  input[type="submit"] {
+    width: 100%;
+    display: block;
+  }
+  .navbar .brand {
+    background: url(images/logo_small.png) no-repeat left center;
+    width: 84px;
+    height: 50px;
+    padding: 0px;
+    margin: 0px;
+    padding: 0px 0px 0px;
+    line-height: 1;
+  }
+  #about {
+    height: auto;
+  }
+  #homeinfo {
+    height: 350px;
+  }
+  #video {
+    height: 250px;
+  }
+  #my_video_1 {
+    height: 100%;
+    width: 100%;
+  }
+}

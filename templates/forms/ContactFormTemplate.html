@@ -1,0 +1,36 @@
+<form id="contactform" accept-charset="UTF-8">
+    <h1>Contact Us</h1>
+    <div id="contact-error" class="alert alert-error" style="display:none;"></div>
+    <fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <label>Name</label>
+                <div class="text-error"></div>
+                <div data-editors="name"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Email</label>
+                <div class="text-error"></div>
+                <div data-editors="email"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Regarding</label>
+                <div class="text-error"></div>
+                <div data-editors="subject"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Message</label>
+                <div class="text-error"></div>
+                <div data-editors="message"></div>
+            </div>
+        </div>
+
+        <input id="SendContact" class="btn btn-primary" type="submit" name="submit" value="Send" />
+    </fieldset>
+</form>

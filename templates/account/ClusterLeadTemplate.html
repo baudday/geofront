@@ -1,0 +1,65 @@
+            <ul class="nav nav-tabs account-menu">
+                <li id="account-btn">
+                    <a href="#/Account">Account</a>
+                </li>
+                <% if(userCreds.level == "admin") { %>
+                    <li id="admin-btn">
+                        <a href="#">Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(userCreds.level == "superadmin") { %>
+                    <li id="superadmin-btn" class="active">
+                        <a href="#/SuperAdmin">Super Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(userCreds.level == "clusterlead") { %>
+                    <li id="clusterlead-btn" class="active">
+                        <a href="#/ClusterLead">Cluster Lead Panel</a>
+                    </li>
+                <% } %>
+            </ul>
+            <div id="clusterlead" class="white">
+                <dl class="account-info">
+                    <dt><legend>Unconfirmed <%= userCreds.cluster %> Services</legend></dt>
+                        <dd id="confirmservices">
+                            <table class="table">
+                                <% _.each(services, function(service) {
+                                    if(service.get('confirmed') == "false") { %>
+                                        <tr>
+                                            <td>
+                                                <%= service.get('cluster') %><br />
+                                                <small class='muted'>
+                                                    <%= service.get('institution_name') %><br />
+                                                    <%= service.get('realname') %><br />
+                                                    <%= new Date(service.get('date')).toLocaleString() %>
+                                                </small>
+                                                <br />
+                                                <button id="<%= service.get('_id') %>" class="btn btn-primary confirm-service">Confirm Service</button>
+                                            </td>
+                                            <td>
+                                                <strong>Description:</strong>
+                                                <blockquote>
+                                                    <%= service.get('description') %>
+                                                </blockquote>
+                                                <strong>Primary Contact:</strong>
+                                                <blockquote>
+                                                    Name:<br />
+                                                    <%= service.get('contact').realname %><br />
+                                                    Phone:<br />
+                                                    <a href="tel:<%= service.get('contact').phone %>"><%= service.get('contact').phone %></a><br />
+                                                    Email:<br />
+                                                    <a href="mailto: <%= service.get('contact').email %>"><%= service.get('contact').email %></a>
+                                                </blockquote>
+                                                <strong>Current Stage:</strong>
+                                                <blockquote>
+                                                        <%= service.get('stage') %>
+                                                </blockquote>
+                                            </td>
+                                        </tr>
+                                    <% }
+                                }); %>
+                            </table>
+                        </dd>
+                    </dt>
+                </dl>
+            </div>

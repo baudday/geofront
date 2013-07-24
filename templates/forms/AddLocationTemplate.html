@@ -1,0 +1,68 @@
+<form id="addlocation" accept-charset="UTF-8">
+    <div id="info" class="alert alert-info"></div>
+    <div id="error" class="alert alert-error" style="display:none;"></div>
+    <fieldset>
+        <div class="control-group">
+            <div class="controls">
+                <label>Location Name</label>
+                <div class="text-error"></div>
+                <div data-editors="name"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Latitude</label>
+                <div class="text-error"></div>
+                <div data-editors="lat"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Longitude</label>
+                <div class="text-error"></div>
+                <div data-editors="lon"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Relief Area</label>
+                <div class="text-error"></div>
+                <div data-editors="area"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Location Type</label>
+                <div class="text-error"></div>
+                <div class="radio-group" data-editors="amenity"></div>
+            </div>
+        </div>
+        <div id="population" class="control-group">
+            <div class="controls">
+                <label>Population</label>
+                <div class="text-error"></div>
+                <div data-editors="population"></div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label>Notes</label>
+                <div class="text-error"></div>
+                <div data-editors="notes"></div>
+            </div>
+        </div>
+        <% if (!window.File && !window.FileReader && !window.FileList && !window.Blob) { %>
+            <div class="alert alert-error">The File APIs are not fully supported by your browser. You will not be able to upload images.</div>
+        <% } else { %>
+            <div class="control-group">
+                <div class="controls">
+                    <label>Add an Image</label>
+                    <div class="text-error"></div>
+                    <input type="file" id="location-image" />
+                    <output id="file"></output>
+                </div>
+            </div>
+        <% } %>
+        <input id="AddInstitution" class="btn btn-primary" type="submit" name="submit" value="Add Location" />
+    </fieldset>
+</form>

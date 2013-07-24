@@ -1,0 +1,13 @@
+{
+    "name": "Backbone Auth",
+    "version": "1.0.0",
+    "dependencies": {
+        "jquery": null,
+        "backbone-amd": null,
+        "underscore-amd": null,
+        "requirejs": null,
+        "bootstrap": null,
+        "json2": null,
+        "jquery.validation": null
+    }
+}

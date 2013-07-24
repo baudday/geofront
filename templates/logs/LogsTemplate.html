@@ -1,0 +1,46 @@
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a id="logtab" href="#eventlog" data-toggle="tab">Events</a></li>
+        <li><a href="#addtolog" data-toggle="tab">+ Event</a></li>
+        <li><a href="#serviceslog" data-toggle="tab">Services</a></li>
+        <li><a href="#addservice" data-toggle="tab">+ Service</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="eventlog">
+            <label>Cluster Filter</label>
+            <select id="eventsfilter">
+                <option value="All">All Clusters</option>
+                <option value="Shelter">Shelter</option>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Water">Water</option>
+                <option value="Health">Health</option>
+                <option value="Food">Food</option>
+                <option value="Logistics">Logistics</option>
+                <option value="Protection">Protection</option>
+                <option value="CCM">CCM</option>
+                <option value="Education">Education</option>
+            </select>
+            <table id="eventstable" class="table"></table>
+        </div>
+        <div class="tab-pane" id="addtolog">
+        </div>
+        <div class="tab-pane" id="serviceslog">
+            <label>Cluster Filter</label>
+            <select id="servicesfilter">
+                <option value="All">All Clusters</option>
+                <option value="Shelter">Shelter</option>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Water">Water</option>
+                <option value="Health">Health</option>
+                <option value="Food">Food</option>
+                <option value="Logistics">Logistics</option>
+                <option value="Protection">Protection</option>
+                <option value="CCM">CCM</option>
+                <option value="Education">Education</option>
+            </select>
+            <table id="servicestable" class="table"></table>
+        </div>
+        <div class="tab-pane" id="addservice">
+        </div>
+    </div>
+</div>

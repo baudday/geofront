@@ -1,0 +1,11 @@
+<% _.each(models, function(entry) { %>
+    <tr>
+        <td>
+            <%= entry.get('institution') %>
+            <br /><small class='muted'><%= entry.get('name') %></small>
+             <small class='muted'><%= new Date(entry.get('date')).toLocaleString() %></small>
+            <br /><small class='muted'><%= entry.get('cluster') %></small>
+            <br /><%= entry.get('message') %>
+        </td>
+    </tr>
+<% }); %>

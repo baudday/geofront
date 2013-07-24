@@ -1,0 +1,19 @@
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a id="areanavtab" href="#jumptoarea" data-toggle="tab">Jump to Relief Area</a></li>
+        <% if(level == "superadmin") { %>
+            <li><a href="#addarea" data-toggle="tab">+ Relief Area</a></li>
+        <% } %>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="jumptoarea">
+        </div>
+        
+        <div class="tab-pane" id="addarea">
+            <div class="alert alert-info">
+                <i class="icon-file"></i> Save the current view as a relief area
+            </div>
+            <div id="area-form"></div>
+        </div>
+    </div>
+</div>

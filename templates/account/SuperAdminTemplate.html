@@ -1,0 +1,28 @@
+            <ul class="nav nav-tabs account-menu">
+                <li id="account-btn">
+                    <a href="#/Account">Account</a>
+                </li>
+                <% if(level == "admin") { %>
+                    <li id="admin-btn">
+                        <a href="#/Admin">Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(level == "superadmin") { %>
+                    <li id="superadmin-btn" class="active">
+                        <a href="#/SuperAdmin">Super Admin Panel</a>
+                    </li>
+                <% } %>
+                <% if(level == "clusterlead") { %>
+                    <li id="clusterlead-btn" class="active">
+                        <a href="#/ClusterLead">Cluster Lead Panel</a>
+                    </li>
+                <% } %>
+            </ul>
+            <div id="superadmin" class="white">
+                <dl class="account-info">
+                    <dt><legend>Add Institution</legend></dt>
+                        <dd id="institution-form">
+                        </dd>
+                    </dt>
+                </dl>
+            </div>
