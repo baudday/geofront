@@ -1,47 +1,47 @@
-<% _.each(entries.models, function(entry) { 
-    if(entry.get('confirmed') == "true") { %>
-        <tr>
-            <td>
-                <small class='muted'>
-                    <%= entry.get('institution_name') %><br />
-                    <%= entry.get('realname') %><br />
-                    <%= new Date(entry.get('date')).toLocaleString() %>
-                </small>
-            </td>
-            <td>
-                <strong>Cluster:</strong>
-                <blockquote>
-                    <%= entry.get('cluster') %>
-                </blockquote>
+<% _.each(entries.models, function(entry) {%>
+    <tr>
+        <td>
+            <small class='muted'>
+                <%= entry.get('institution_name') %><br />
+                <%= entry.get('realname') %><br />
+                <%= new Date(entry.get('date')).toLocaleString() %>
+            </small>
+        </td>
+        <td>
+            <strong>Cluster:</strong>
+            <blockquote>
+                <%= entry.get('cluster') %>
+            </blockquote>
 
-                <strong>Current Stage:</strong>
-                <blockquote>
-                    <% if(userCreds._id == entry.get('user_id') || userCreds.level == "clusterlead") { %>
-                        <div id="<%= entry.get('_id') %>-stage-error" class="alert alert-error" style="display:none;"></div>
-                        <select class="updateservicestage" id="<%= entry.get('_id') %>">
-                            <option value="Assessment" <% if(entry.get('stage') == "Assessment") { %> selected <% } %>>Assessment</option>
-                            <option value="Plan Pending" <% if(entry.get('stage') == "Plan Pending") { %> selected <% } %>>Plan Pending</option>
-                            <option value="Planned" <% if(entry.get('stage') == "Planned") { %> selected <% } %>>Planned</option>
-                            <option value="Commenced" <% if(entry.get('stage') == "Commenced") { %> selected <% } %>>Commenced</option>
-                        </select>
-                    <% } else { %>
-                        <%= entry.get('stage') %>
-                    <% } %>
-                </blockquote>
+            <strong>Current Stage:</strong>
+            <blockquote>
+                <% if(entry.get('stage') == "Plan Pending") { %>
+                    <%= entry.get('stage') %>
+                <% }
+                else if(userCreds._id == entry.get('user_id') || userCreds.level == "clusterlead") { %>
+                    <div id="<%= entry.get('_id') %>-stage-error" class="alert alert-error" style="display:none;"></div>
+                    <select class="updateservicestage" id="<%= entry.get('_id') %>">
+                        <option value="Assessment" <% if(entry.get('stage') == "Assessment") { %> selected <% } %>>Assessment</option>
+                        <option value="Planned" <% if(entry.get('stage') == "Planned") { %> selected <% } %>>Planned</option>
+                        <option value="Commenced" <% if(entry.get('stage') == "Commenced") { %> selected <% } %>>Commenced</option>
+                    </select>
+                <% } else { %>
+                    <%= entry.get('stage') %>
+                <% } %>
+            </blockquote>
 
-                <strong>Description:</strong>
-                <blockquote>
-                    <%= entry.get('description') %>
-                </blockquote>
+            <strong>Description:</strong>
+            <blockquote>
+                <%= entry.get('description') %>
+            </blockquote>
 
-                <strong class="expand-contact">Contact <%= entry.get('contact').realname %> [<span>+</span>]</strong>
-                <div class='contact'>
-                    <blockquote>
-                        Phone: <a href="tel:<%= entry.get('contact').phone %>"><%= entry.get('contact').phone %></a><br />
-                        Email: <a href="mailto: <%= entry.get('contact').email %>"><%= entry.get('contact').email %></a>
-                    </blockquote>
-                </div>
-            </td>
-        </tr>
-    <% }
-}); %>
+            <strong class="expand-contact">Contact <%= entry.get('contact').realname %> [<span>+</span>]</strong>
+            <div class='contact'>
+                <blockquote>
+                    Phone: <a href="tel:<%= entry.get('contact').phone %>"><%= entry.get('contact').phone %></a><br />
+                    Email: <a href="mailto: <%= entry.get('contact').email %>"><%= entry.get('contact').email %></a>
+                </blockquote>
+            </div>
+        </td>
+    </tr>
+<%}); %>

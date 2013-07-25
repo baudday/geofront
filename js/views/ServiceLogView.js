@@ -148,9 +148,9 @@ define([
             service.id = serviceId;
             var stage = $("#" + serviceId).val();
 
-            if(stage == "Plan Pending") {
-                $(ev.target).parent().parent().parent().fadeOut('fast')
-            }
+            // if(stage == "Planned") {
+            //     $(ev.target).parent().parent().parent().fadeOut('fast')
+            // }
 
             service.save({
                 stage: stage,

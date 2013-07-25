@@ -31,7 +31,6 @@ define([
                 options: [
                     {val: "", label: "Select One"},
                     {val: "Assessment", label: "Assessment"},
-                    {val: "Plan Pending", label: "Plan Pending"},
                     {val: "Planned", label: "Planned"},
                     {val: "Commenced", label: "Commenced"}
                 ],
