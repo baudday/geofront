@@ -81,7 +81,7 @@ define([
             } else {
                 $.each(errors, function(key, value) {
                     $("[name='" + key + "']").closest(".control-group").addClass("error");
-                    $("[name='" + key + "']").closest(".control-group".find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
+                    $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                 });
             }
             return false;
