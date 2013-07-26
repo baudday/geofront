@@ -40,7 +40,7 @@ function   (App) {
         }
     });
 
-    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+    $.ajaxPrefilter('json', function(options, originalOptions, jqXHR) {
         options.url = '//localhost:3000/api' + options.url
         options.xhrFields = {
             withCredentials: true
