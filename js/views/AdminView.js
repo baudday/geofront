@@ -7,39 +7,45 @@ define([
     'text!templates/account/AdminTemplate.html',
     'forms/AddApprovedUserForm',
     'models/ApprovedUserModel',
-    'text!templates/forms/AddApprovedUserTemplate.html'
+    'text!templates/forms/AddApprovedUserTemplate.html',
+    'models/InstitutionModel'
 ], function($, _, Backbone, serializeForm, backboneForms, AdminTemplate, AddApprovedUserForm,
-            ApprovedUserModel, AddApprovedUserTemplate){
-
+            ApprovedUserModel, AddApprovedUserTemplate, InstitutionModel){
+    var that;
     var AdminView = Backbone.View.extend({
         el: '.body',
         render: function() {
+            that = this;
             // Get the user's credentials
             var userCreds = JSON.parse($.cookie('UserInfo'));
+            this.data = {};
+            this.data.userCreds = userCreds;
 
-            // Load the template
-            var adminTemplate = _.template(AdminTemplate, userCreds);
-            this.$el.html(adminTemplate);
+            this.getApprovedEmails(function() {
+                // Load the template
+                var adminTemplate = _.template(AdminTemplate, that.data);
+                that.$el.html(adminTemplate);
 
-            // Load the form
-            this.approvedUserForm = new AddApprovedUserForm({
-                template: _.template(AddApprovedUserTemplate),
-                model: new ApprovedUserModel()
-            }).render();
+                // Load the form
+                that.approvedUserForm = new AddApprovedUserForm({
+                    template: _.template(AddApprovedUserTemplate),
+                    model: new ApprovedUserModel()
+                }).render();
 
-            $("#approve-user-form").html(this.approvedUserForm.el);
+                $("#approve-user-form").html(that.approvedUserForm.el);
 
-            // Approved User form validation
-            this.approvedUserForm.on('change', function(form) {
-                $(".control-group").removeClass("error").addClass("success");
-                $("#addapproveduser :input").closest(".control-group").find(".text-error").html("");
-                var errors = form.commit();
-                if(errors) {
-                    $.each(errors, function(key, value) {
-                        $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
-                        $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
-                    });
-                }
+                // Approved User form validation
+                that.approvedUserForm.on('change', function(form) {
+                    $(".control-group").removeClass("error").addClass("success");
+                    $("#addapproveduser :input").closest(".control-group").find(".text-error").html("");
+                    var errors = form.commit();
+                    if(errors) {
+                        $.each(errors, function(key, value) {
+                            $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
+                            $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
+                        });
+                    }
+                });
             });
         },
         events: {
@@ -59,10 +65,15 @@ define([
                                                 .addClass("alert-success")
                                                 .html($("#addapproveduser [name=email]").val() + " was successfully added!")
                                                 .show();
-                        $("#contactform :input").val("")
+                        $("#addapproveduser :text").val("")
                                                 .removeClass("success");
-                        $("#contactform :input").closest(".control-group")
+                        $("#addapproveduser :input").closest(".control-group")
                                                 .removeClass("success");
+
+                        that.getApprovedEmails(function() {
+                            var row = "<tr><td>" + that.newApprovedUser.email + "</td></tr>";
+                            $("#approved-users").append(row);
+                        });
                     },
                     error: function(model, response) {
                         $("#approveduser-error").hide();
@@ -81,6 +92,16 @@ define([
                 });
             }
             return false;
+        },
+        getApprovedEmails: function(callback) {
+            var institution = new InstitutionModel();
+            institution.fetch({
+                url: '/institutions/' + this.data.userCreds.institution,
+                success: function(institution) {
+                    that.data.institution = institution;
+                    callback();
+                }
+            });
         }
     });
     return AdminView;

@@ -17,23 +17,23 @@
                         <ul class="nav pull-right">
                             <li><a href="">Home</a></li>
                             <% if(userCreds) { %>
-                                <li><a href="#/ReliefAreas">Relief Areas</a></li>
+                                <li><a class="menu-button" href="#/ReliefAreas">Relief Areas</a></li>
                             <% } %>
-                            <li><a href="#/About">About</a></li>
-                            <li><a href="#/Institutions">Institutions</a></li>
-                            <li><a href="#/Contact">Contact</a></li>
+                            <li><a class="menu-button" href="#/About">About</a></li>
+                            <li><a class="menu-button" href="#/Institutions">Institutions</a></li>
+                            <li><a class="menu-button" href="#/Contact">Contact</a></li>
                             <!-- <li><a href="#">Blog</a></li> -->
                             <% if(userCreds) { %>
                                 <li class="dropdown">
                                     <a class="dropdown-toggle" href="#" data-toggle="dropdown"><%= userCreds.realname %><strong class="caret"></strong></a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="#/Account">My Account</a></li>
-                                        <li><a href="#/Logout">Logout</a></li>
+                                        <li><a class="menu-button" href="#/Account">My Account</a></li>
+                                        <li><a class="menu-button" href="#/Logout">Logout</a></li>
                                     </ul>
                                 </li>
                             <%} else { %>
-                                <li><a href="#/SignUp">Sign Up</a></li>
-                                <li><a href="#/SignIn">Sign In</a></li>
+                                <li><a class="menu-button" href="#/SignUp">Sign Up</a></li>
+                                <li><a class="menu-button" href="#/SignIn">Sign In</a></li>
                             <% } %>
                         </ul>
                     </div><!--/.nav-collapse -->

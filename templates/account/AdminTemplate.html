@@ -2,17 +2,17 @@
                 <li id="account-btn">
                     <a href="#/Account">Account</a>
                 </li>
-                <% if(level == "admin") { %>
+                <% if(userCreds.level == "admin") { %>
                     <li id="admin-btn" class="active">
                         <a href="#">Admin Panel</a>
                     </li>
                 <% } %>
-                <% if(level == "superadmin") { %>
+                <% if(userCreds.level == "superadmin") { %>
                     <li id="superadmin-btn">
                         <a href="#/SuperAdmin">Super Admin Panel</a>
                     </li>
                 <% } %>
-                <% if(level == "clusterlead") { %>
+                <% if(userCreds.level == "clusterlead") { %>
                     <li id="clusterlead-btn">
                         <a href="#/ClusterLead">Cluster Lead Panel</a>
                     </li>
@@ -23,9 +23,13 @@
                     <dt><legend>Add Approved User Email</legend></dt>
                         <dd id="approve-user-form">
                         </dd>
-                    <dt><legend>Unregistered Approved Emails</legend></dt>
+                    <dt><legend>Approved Emails</legend></dt>
                         <dd>
-                            <table id="approved-users" class="table table-striped"></table>
+                            <table id="approved-users" class="table table-striped">
+                                <% _.each(institution.get('approvedEmails'), function(email) { %>
+                                    <tr><td><%= email %></td></tr>
+                                <% }); %>
+                            </table>
                         </dd>
                     </dt>
                 </dl>

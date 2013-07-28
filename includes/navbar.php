@@ -12,10 +12,10 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li class=""><a href="">Home</a></li>
-                            <li><a href="#/Map">Map</a></li>
-                            <li><a href="#/Institutions">Institutions</a></li>
-                            <li><a href="#/About">About</a></li>
-                            <li><a href="#/Contact">Contact</a></li>
+                            <li><a class="menu-button" href="#/Map">Map</a></li>
+                            <li><a class="menu-button" href="#/Institutions">Institutions</a></li>
+                            <li><a class="menu-button" href="#/About">About</a></li>
+                            <li><a class="menu-button" href="#/Contact">Contact</a></li>
                             <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
                             <!-- <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>

@@ -371,8 +371,7 @@ define([
                 var string = "<tr><th>Name</th><th>Type</th><th>Population</th><th>Relief Area</th><th>Notes</th></tr>";
 
                 $.each(that.markers, function(key, marker) {
-                    console.log(query);
-                    if(marker.options.name.indexOf(query) !== -1) {
+                    if(marker.options.name.toLowerCase().indexOf(query) !== -1) {
 
                         string += "<tr class='location' id='" + marker.options._id + "'>";
 
@@ -574,7 +573,7 @@ define([
             var location = this.locations[$(target).parent().attr('id')];
             var geometry = location.feature.geometry;
 
-            location.openPopup();
+            location.fireEvent('click');
             map.panTo(new L.LatLng(geometry.coordinates[1], geometry.coordinates[0]));
 
             // Hide the pane
