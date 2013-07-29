@@ -371,7 +371,7 @@ define([
                 var string = "<tr><th>Name</th><th>Type</th><th>Population</th><th>Relief Area</th><th>Notes</th></tr>";
 
                 $.each(that.markers, function(key, marker) {
-                    if(marker.options.name.toLowerCase().indexOf(query) !== -1) {
+                    if(marker.options.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
 
                         string += "<tr class='location' id='" + marker.options._id + "'>";
 
