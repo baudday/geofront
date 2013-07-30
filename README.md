@@ -1,4 +1,4 @@
 geofront
 ========
 
-GeoReliefs Frontend
+GeoRelief Frontend
