@@ -423,7 +423,16 @@ define([
                         $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
                         $("#main-pane-content").scrollTop(0);
 
-                        that.render();
+                        // Clear the image
+                        that.newLocationImage = null;
+
+                        // Remove all the locations
+                        map.removeLayer(that.locationsLayer);
+                        map.removeLayer(that.heatmapLayer);
+
+                        // Map the locations again
+                        var url = "/locations";
+                        that.mapLocations(url);
                     },
                     error: function(model, response) {
                         $("#error").show().html(response.responseText);
