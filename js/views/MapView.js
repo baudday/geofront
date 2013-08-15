@@ -101,7 +101,7 @@ define([
             });
 
             // Add layer to map
-            L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+            L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png').addTo(map);
 
             // Find the user's location before mapping locations. 
             // Locations are more important and need to be on top.

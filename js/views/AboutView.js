@@ -22,7 +22,7 @@ define([
             });
 
             // add an OpenStreetMap tile layer
-            L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
