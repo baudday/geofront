@@ -74,12 +74,15 @@ define([
                     },
                     error: function(model, response) {
                         $("#error").addClass("alert-error");
-                        if(response.status == 409) {
+                        if(response.status === 409) {
                             $("[name='username']").closest(".control-group").removeClass("success").addClass("error");
                             $("[name='username']").closest(".control-group").find(".text-error").html("<small class='control-group error'>Username already exists</small>");
-                        } else if(response.status == 404) {
+                        } else if(response.status === 404) {
                             $("[name='email']").closest(".control-group").removeClass("success").addClass("error");
                             $("[name='email']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + response.responseText + "</small>");
+                        } else if(response.status === 0) {
+                            var offlineTemplate = _.template(OfflineTemplate);
+                            that.$el.html(offlineTemplate);
                         } else {
                             $("#error").show().html(response.responseText);
                         }

@@ -35,16 +35,17 @@ requirejs([
 function   (App, PouchDB) {
     window.offline = false;
     $.ajaxSetup({
-        statusCode: {
-            0: function() {
+        complete: function(response) {
+            if (response.status === 0) {
                 // Set offline flag to true when status of 0 is received
                 window.offline = true;
-            },
-            401: function() {
+            } else if (response.status === 401) {
                 if($.cookie('UserInfo')) {
                     // Log the user out whenever the server returns a 401.
                     Backbone.history.navigate("#/Logout");
                 }
+            } else {
+                window.offline = false;
             }
         }
     });

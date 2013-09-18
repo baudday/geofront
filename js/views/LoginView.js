@@ -43,10 +43,7 @@ define([
         },
         loginUser: function(ev) {
             var errors = form.commit();
-            if(window.offline) {
-                var offlineTemplate = _.template(OfflineTemplate);
-                that.$el.html(offlineTemplate);
-            } else if(!errors) {
+            if(!errors) {
                 var loginUser = $(ev.currentTarget).serializeForm();
                 userCreds.save(loginUser, {
                     success: function(user) {
