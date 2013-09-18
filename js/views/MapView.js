@@ -6,6 +6,7 @@ define([
     'leaflet',
     'heatmap',
     'heatmapL',
+    'backbonePouch',
     'text!templates/map/MapTemplate.html',
     'models/LoginModel',
     'collections/LocationsCollection',
@@ -25,7 +26,7 @@ define([
     'models/AreaModel',
     'text!templates/forms/SearchLocationsTemplate.html',
     'forms/SearchLocationsForm'
-], function($, _, Backbone, Bootstrap, L, heatmapL, heatmap, MapTemplate, LoginModel, 
+], function($, _, Backbone, Bootstrap, L, heatmap, heatmapL, BackbonePouch, MapTemplate, LoginModel, 
             LocationsCollection, LocationModel, AddLocationTemplate, NewLocationForm, EventLogView, 
             ServiceLogView, AreasCollection, LogsTemplate, FiltersTemplate, AreasTemplate, 
             AreaFilterForm, AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,

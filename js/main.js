@@ -13,22 +13,26 @@ requirejs.config({
         jqcookie: 'lib/jquery-cookie/jquery.cookie',
         heatmap: 'lib/heatmapjs/heatmap',
         heatmapL: 'lib/heatmapjs/heatmap-leaflet',
-        QuadTree: 'lib/heatmapjs/QuadTree'
+        QuadTree: 'lib/heatmapjs/QuadTree',
+        pouchdb: 'lib/pouchdb/src/pouchdb-nightly.min',
+        backbonePouch: 'lib/backbone-pouch/backbone-pouch'
     },
     shim: {
         'bootstrap': {deps: ['jquery']},
         'leaflet': {exports: 'L'},
         'jqcookie': {deps: ['jquery']},
-        'heatmapL': {deps: ['leaflet', 'heatmap', 'QuadTree']}
+        'heatmapL': {deps: ['leaflet', 'heatmap', 'QuadTree']},
+        'pouchdb': {exports: 'Pouch'},
+        'backbonePouch': {deps: ['pouchdb'], exports: 'BackbonePouch'},
     }
 });
 
 // Start the main app logic.
 requirejs([
     'app',
-    'backbone'
+    'pouchdb'
     ],
-function   (App) {
+function   (App, PouchDB) {
     $.ajaxSetup({
         statusCode: {
             401: function() {
