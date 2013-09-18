@@ -9,9 +9,10 @@ define([
     'forms/NewUserForm',
     'models/UserModel',
     'text!templates/forms/RegisterTemplate.html',
-    'text!templates/static/ThankYouTemplate.html'
+    'text!templates/static/ThankYouTemplate.html',
+    'text!templates/static/OfflineTemplate.html'
 ], function($, _, Backbone, Bootstrap, serializeForm, backboneForms, InstitutionsCollection, NewUserForm, 
-            UserModel, RegisterTemplate, ThankYouTemplate) {
+            UserModel, RegisterTemplate, ThankYouTemplate, OfflineTemplate) {
     // The form
     var form;
     var that;
@@ -51,6 +52,10 @@ define([
                             });
                         }
                     });
+                },
+                error: function() {
+                    var offlineTemplate = _.template(OfflineTemplate);
+                    that.$el.html(offlineTemplate);
                 }
             });
         },

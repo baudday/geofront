@@ -7,15 +7,18 @@ define([
     'forms/LoginForm',
     'models/LoginModel',
     'text!templates/forms/LoginTemplate.html',
-    'text!templates/header.html'
+    'text!templates/header.html',
+    'text!templates/static/OfflineTemplate.html'
 ], function($, _, Backbone, serializeForm, backboneForms, LoginForm, LoginModel, LoginTemplate, 
-            HeaderTemplate){
+            HeaderTemplate, OfflineTemplate){
     var form;
     var userCreds = new LoginModel();
+    var that;
 
     var LoginView = Backbone.View.extend({
         el: '.body',
         render: function() {
+            that = this;
             form = new LoginForm({
                 template: _.template(LoginTemplate),
                 model: userCreds
@@ -40,8 +43,10 @@ define([
         },
         loginUser: function(ev) {
             var errors = form.commit();
-            
-            if(!errors ) {
+            if(window.offline) {
+                var offlineTemplate = _.template(OfflineTemplate);
+                that.$el.html(offlineTemplate);
+            } else if(!errors) {
                 var loginUser = $(ev.currentTarget).serializeForm();
                 userCreds.save(loginUser, {
                     success: function(user) {
@@ -54,7 +59,12 @@ define([
                         Backbone.history.navigate("#/ReliefAreas");
                     },
                     error: function(model, response) {
-                        $("#error").show().html(response.responseText);
+                        if(response.status === 0) {
+                            var offlineTemplate = _.template(OfflineTemplate);
+                            that.$el.html(offlineTemplate);
+                        } else {
+                            $("#error").show().html(response.responseText);
+                        }
                     }
                 });
             } else {

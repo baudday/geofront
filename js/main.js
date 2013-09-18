@@ -33,8 +33,13 @@ requirejs([
     'pouchdb'
     ],
 function   (App, PouchDB) {
+    window.offline = false;
     $.ajaxSetup({
         statusCode: {
+            0: function() {
+                // Set offline flag to true when status of 0 is received
+                window.offline = true;
+            },
             401: function() {
                 if($.cookie('UserInfo')) {
                     // Log the user out whenever the server returns a 401.
