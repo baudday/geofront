@@ -1,5 +1,6 @@
 requirejs.config({
     paths: {
+        config: "config",
         jquery: "lib/jquery/jquery",
         underscore: "lib/underscore-amd/underscore",
         backbone: "lib/backbone-amd/backbone",
@@ -15,24 +16,42 @@ requirejs.config({
         heatmapL: 'lib/heatmapjs/heatmap-leaflet',
         QuadTree: 'lib/heatmapjs/QuadTree',
         pouchdb: 'lib/pouchdb/src/pouchdb-nightly.min',
-        backbonePouch: 'lib/backbone-pouch/backbone-pouch'
+        backbonepouch: 'lib/backbone-pouch/backbone-pouch'
     },
     shim: {
-        'bootstrap': {deps: ['jquery']},
-        'leaflet': {exports: 'L'},
-        'jqcookie': {deps: ['jquery']},
-        'heatmapL': {deps: ['leaflet', 'heatmap', 'QuadTree']},
-        'pouchdb': {exports: 'Pouch'},
-        'backbonePouch': {deps: ['pouchdb'], exports: 'BackbonePouch'},
+        'bootstrap': {
+            deps: ['jquery']
+        },
+        'leaflet': {
+            exports: 'L'
+        },
+        'jqcookie': {
+            deps: ['jquery']
+        },
+        'heatmapL': {
+            deps: ['leaflet', 'heatmap', 'QuadTree']
+        },
+        'pouchdb': {
+            exports: 'Pouch'
+        },
+        'backbonepouch': {
+            deps: ['pouchdb'], 
+            exports: 'BackbonePouch'
+        },
+        'config': {
+            exports: 'config'
+        }
     }
 });
 
 // Start the main app logic.
 requirejs([
     'app',
-    'pouchdb'
+    'pouchdb',
+    'backbonepouch',
+    'config'
     ],
-function   (App, PouchDB) {
+function   (App, PouchDB, BackbonePouch, config) {
     window.offline = false;
     $.ajaxSetup({
         complete: function(response) {
@@ -51,7 +70,7 @@ function   (App, PouchDB) {
     });
 
     $.ajaxPrefilter('json', function(options, originalOptions, jqXHR) {
-        options.url = '//localhost:3000/api' + options.url
+        options.url = config.baseApiUrl + options.url
         options.xhrFields = {
             withCredentials: true
        }

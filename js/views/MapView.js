@@ -6,7 +6,7 @@ define([
     'leaflet',
     'heatmap',
     'heatmapL',
-    'backbonePouch',
+    'backbonepouch',
     'text!templates/map/MapTemplate.html',
     'models/LoginModel',
     'collections/LocationsCollection',
