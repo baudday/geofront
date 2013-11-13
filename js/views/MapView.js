@@ -108,10 +108,6 @@ define([
             // Locations are more important and need to be on top.
             map.locate({setView: true, maxZoom: 15});
 
-            // Map the locations
-            var url = "/locations";
-            this.mapLocations(url);
-
             function onLocationFound(e) {
                 // Set the latlng to be used for other stuff!
                 that.userLocation = e.latlng;
@@ -494,14 +490,21 @@ define([
             // Map the locations
             this.mapLocations(url);
         },
-        goToArea: function(ev) {
-            var target = ev.target,
-                coordinates = JSON.parse(unescape($(target).val()));
-                
+        goToArea: function() {
+            var $target = $('#filterareaselect option:selected'),
+                coordinates = JSON.parse(unescape($target.val())),
+                area = $target.text();
+
+            // Remove all the locations
+            if(this.locationsLayer) {
+                map.removeLayer(this.locationsLayer);
+                map.removeLayer(this.heatmapLayer);
+            }
+
             map.panTo(new L.LatLng(coordinates.lat, coordinates.lon));
             map.setZoom(coordinates.zoom);
             
-            
+            this.mapLocations("/locations/area/" + area);
 
             // Hide the pane
             this.hidePane();
@@ -584,7 +587,10 @@ define([
             var geometry = location.feature.geometry;
 
             location.fireEvent('click');
-            map.panTo(new L.LatLng(geometry.coordinates[1], geometry.coordinates[0]));
+            map.panTo(new L.LatLng(
+                geometry.coordinates[1],
+                geometry.coordinates[0])
+            );
 
             // Hide the pane
             this.hidePane();
@@ -756,7 +762,7 @@ define([
                             properties = location.get('geoJSON').properties;
 
                         heatData.push({
-                            lon: geometry.coordinates[0], 
+                            lon: geometry.coordinates[0],
                             lat: geometry.coordinates[1],
                             value: properties.serviceCount
                         });
@@ -769,7 +775,10 @@ define([
                             population: properties.population,
                             notes: properties.notes,
                             area: properties.area,
-                            latlng: new L.LatLng(geometry.coordinates[1], geometry.coordinates[0]),
+                            latlng: new L.LatLng(
+                                geometry.coordinates[1],
+                                geometry.coordinates[0]
+                            ),
                             onEachFeature: that.onEachFeature
                         });
 
