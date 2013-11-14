@@ -1,35 +1,23 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'leaflet',
-    'heatmap',
-    'heatmapL',
-    'backbonepouch',
-    'text!templates/map/MapTemplate.html',
-    'models/LoginModel',
-    'collections/LocationsCollection',
-    'models/LocationModel',
-    'text!templates/forms/AddLocationTemplate.html',
-    'forms/NewLocationForm',
-    'views/EventLogView',
-    'views/ServiceLogView',
-    'collections/AreasCollection',
+    'config',  'jquery',   'underscore',    'backbone', 'bootstrap', 'leaflet',
+    'heatmap', 'heatmapL', 'backbonepouch', 'CouchRest',
+    'text!templates/map/MapTemplate.html',  'models/LoginModel',
+    'collections/LocationsCollection',      'models/LocationModel',
+    'text!templates/forms/AddLocationTemplate.html',    'forms/NewLocationForm',
+    'views/EventLogView', 'views/ServiceLogView', 'collections/AreasCollection',
     'text!templates/logs/LogsTemplate.html',
     'text!templates/map/FiltersTemplate.html',
-    'text!templates/map/AreasTemplate.html',
-    'forms/AreaFilterForm',
-    'text!templates/forms/AreaFilterFormTemplate.html',
-    'forms/NewAreaForm',
-    'text!templates/forms/AddAreaTemplate.html',
-    'models/AreaModel',
+    'text!templates/map/AreasTemplate.html', 'forms/AreaFilterForm',
+    'text!templates/forms/AreaFilterFormTemplate.html', 'forms/NewAreaForm',
+    'text!templates/forms/AddAreaTemplate.html', 'models/AreaModel',
     'text!templates/forms/SearchLocationsTemplate.html',
     'forms/SearchLocationsForm'
-], function($, _, Backbone, Bootstrap, L, heatmap, heatmapL, BackbonePouch, MapTemplate, LoginModel, 
-            LocationsCollection, LocationModel, AddLocationTemplate, NewLocationForm, EventLogView, 
-            ServiceLogView, AreasCollection, LogsTemplate, FiltersTemplate, AreasTemplate, 
-            AreaFilterForm, AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
+], function(config, $, _, Backbone, Bootstrap, L, heatmap, heatmapL,
+            BackbonePouch, CouchRest, MapTemplate, LoginModel,
+            LocationsCollection, LocationModel, AddLocationTemplate,
+            NewLocationForm, EventLogView, ServiceLogView, AreasCollection,
+            LogsTemplate, FiltersTemplate, AreasTemplate, AreaFilterForm,
+            AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
             SearchLocationsTemplate, SearchLocationsForm){
 
     var that;
@@ -79,6 +67,23 @@ define([
         newLocation: new LocationModel(),
         locations: new Array(),
         paneVisible: false,
+        couchRest: new CouchRest({
+            couchUrl: config.couchUrl,
+            apiUrl: config.baseApiUrl
+        }),
+        locationsLayer: L.layerGroup(),
+        heatmapLayer: L.TileLayer.heatMap({
+            radius: {value: 20, absolute: false},
+            opacity: 0.8,
+            gradient: {
+                0.45: "rgb(59, 151, 211)", // also lt blue
+                0.55: "rgb(59, 151, 211)", // lt blue
+                0.65: "rgb(1, 149, 71)", // green
+                0.95: "rgb(240, 196, 25)", // yellow
+                1.00: "rgb(231,76,61)" // red
+            }
+        }),
+        area: null,
         render: function() {
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
@@ -242,31 +247,25 @@ define([
             this.showPane("100%");
             $("#areanavbtn").addClass('close-pane');
 
-            // Create the areas collection
-            var areas = new AreasCollection();
+            this.getAreas(function(areas) {
+                // Load the form
+                that.areaFilterForm = new AreaFilterForm({
+                    template: _.template(AreaFilterFormTemplate)
+                }).render();
 
-            // Get the areas
-            areas.fetch({
-                success: function(areas) {
-                    // Load the form
-                    that.areaFilterForm = new AreaFilterForm({
-                        template: _.template(AreaFilterFormTemplate)
-                    }).render();
-
-                    var options = [];
-                    options.push({val: '',label: 'Select One'});
-                    $.each(areas.models, function(index, value) {
-                        options.push({
-                            val: escape(value.attributes.coordinates), 
-                            label: value.attributes._id
-                        });
+                var options = [];
+                options.push({val: '',label: 'Select One'});
+                $.each(areas, function(index, value) {
+                    options.push({
+                        val: escape(value.doc.coordinates), 
+                        label: value.doc._id
                     });
+                });
 
-                    that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
+                that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
 
-                    // Render the form
-                    $("#jumptoarea").html(that.areaFilterForm.el);
-                }
+                // Render the form
+                $("#jumptoarea").html(that.areaFilterForm.el);
             });
 
             // Load the area form
@@ -482,7 +481,7 @@ define([
 
 
             if(filter == "all") {
-                var url = "/locations";
+                var url = "/locations/area/" + this.area;
             } else {
                 var url = "/locations/type/" + filter;
             }
@@ -492,8 +491,9 @@ define([
         },
         goToArea: function() {
             var $target = $('#filterareaselect option:selected'),
-                coordinates = JSON.parse(unescape($target.val())),
-                area = $target.text();
+                coordinates = JSON.parse(unescape($target.val()));
+
+            this.area = $target.text();
 
             // Remove all the locations
             if(this.locationsLayer) {
@@ -504,7 +504,7 @@ define([
             map.panTo(new L.LatLng(coordinates.lat, coordinates.lon));
             map.setZoom(coordinates.zoom);
             
-            this.mapLocations("/locations/area/" + area);
+            this.mapLocations("/locations/area/" + this.area);
 
             // Hide the pane
             this.hidePane();
@@ -520,58 +520,54 @@ define([
                 var mapZoom = map.getZoom();
 
                 // Get the form info
-                var newArea = $(ev.currentTarget).serializeForm();
+                var formData = $(ev.currentTarget).serializeForm();
 
-                // Add the coordinates to the object. Have to do our own bit of parsing here
-                newArea.coordinates = "{\"lat\":" + mapCenter.lat + ", \"lon\":" + mapCenter.lng + ", \"zoom\":" + mapZoom + "}";
-
-                var area = new AreaModel();
+                var area = {
+                    _id: formData.areaname,
+                    coordinates: "{\"lat\":" + mapCenter.lat + ", \"lon\":" + mapCenter.lng + ", \"zoom\":" + mapZoom + "}",
+                    date: new Date()
+                };
 
                 // Save that ish
-                area.save(newArea, {
-                    success: function(institution) {
-                        // Reset the form
-                        $("#area-error").hide();
-                        $("#area-error").removeClass("alert-error").addClass("alert-success").html("Area successfully added!").show();
-                        $("#area-form input[type='text']").val("");
-                        $("#area-form input").closest(".control-group").removeClass("success");
-                        $("#area-form textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-
-                        // Create the areas collection
-                        var areas = new AreasCollection();
-
-                        // Get the areas
-                        areas.fetch({
-                            success: function(areas) {
-                                // Load the form
-                                that.areaFilterForm = new AreaFilterForm({
-                                    template: _.template(AreaFilterFormTemplate)
-                                }).render();
-
-                                var options = [];
-                                options.push({val: '',label: 'Select One'});
-                                $.each(areas.models, function(index, value) {
-                                    options.push({
-                                        val: escape(value.attributes.coordinates), 
-                                        label: value.attributes._id
-                                    });
-                                });
-
-                                that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
-
-                                // Render the form
-                                $("#jumptoarea").html(that.areaFilterForm.el);
-                            }
-                        });
-                    },
-                    error: function(model, response) {
+                this.couchRest.save('areas', area, function(err, res) {
+                    if(err) {
                         $("#area-error").removeClass("alert-success").addClass("alert-error");
-                        if(response.status == 409) {
+                        if(err.status == 409) {
                             $("#area-error").show().html("That area already exists");
                         } else {
-                            $("#area-error").show().html(response.responseText);
+                            $("#area-error").show().html(err.reason);
                         }
+
+                        return;
                     }
+
+                    // Reset the form
+                    $("#area-error").hide();
+                    $("#area-error").removeClass("alert-error").addClass("alert-success").html("Area successfully added!").show();
+                    $("#area-form input[type='text']").val("");
+                    $("#area-form input").closest(".control-group").removeClass("success");
+                    $("#area-form textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
+
+                    that.getAreas(function(areas) {
+                        // Load the form
+                        that.areaFilterForm = new AreaFilterForm({
+                            template: _.template(AreaFilterFormTemplate)
+                        }).render();
+
+                        var options = [];
+                        options.push({val: '',label: 'Select One'});
+                        $.each(areas, function(index, value) {
+                            options.push({
+                                val: escape(value.doc.coordinates), 
+                                label: value.doc._id
+                            });
+                        });
+
+                        that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
+
+                        // Render the form
+                        $("#jumptoarea").html(that.areaFilterForm.el);
+                    });
                 });
             } else {
                 $.each(errors, function(key, value) {
@@ -695,47 +691,45 @@ define([
             });
         },
         renderAddLocationForm: function(lat, lon, callback) {
-            // Create the areas collection
-            var areas = new AreasCollection();
+            this.getAreas(function(areas) {
+                // Load the form
+                form = new NewLocationForm({
+                    template: _.template(AddLocationTemplate),
+                    model: new LocationModel()
+                }).render();
 
-            areas.fetch({
-                success: function(areas) {
-                    // Load the form
-                    form = new NewLocationForm({
-                        template: _.template(AddLocationTemplate),
-                        model: new LocationModel()
-                    }).render();
+                var options = [];
 
-                    var options = [];
+                $.each(areas, function(index, value) {
+                    options[index] = {
+                        val: value.doc._id,
+                        label: value.doc._id
+                    };
+                });
 
-                    $.each(areas.models, function(index, value) {
-                        options[index] = {val: value.attributes._id, label: value.attributes._id}
-                    });
+                form.fields.area.editor.setOptions(options);
 
-                    form.fields.area.editor.setOptions(options);
+                // Render the form
+                $("#main").html(form.el);
+                
+                // Set the fields
+                $("[name='lat']").val(lat);
+                $("[name='lon']").val(lon);
 
-                    // Render the form
-                    $("#main").html(form.el);
-                    
-                    // Set the fields
-                    $("[name='lat']").val(lat);
-                    $("[name='lon']").val(lon);
+                // Validate the form on change
+                form.on('change', function(form) {
+                    $(".control-group").removeClass("error").addClass("success");
+                    $("input").closest(".control-group").find(".text-error").html("");
+                    var errors = form.commit();
+                    if(errors) {
+                        $.each(errors, function(key, value) {
+                            $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
+                            $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
+                        });
+                    }
+                });
 
-                    // Validate the form on change
-                    form.on('change', function(form) {
-                        $(".control-group").removeClass("error").addClass("success");
-                        $("input").closest(".control-group").find(".text-error").html("");
-                        var errors = form.commit();
-                        if(errors) {
-                            $.each(errors, function(key, value) {
-                                $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
-                                $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
-                            });
-                        }
-                    });
-
-                    callback();
-                }
+                callback();
             });
         },
         mapLocations: function(url) {
@@ -785,12 +779,25 @@ define([
                         marker.on('click', that.onMarkerClick);
                         that.markers.push(marker);
                     });
-
-                    that.locationsLayer = L.layerGroup(that.markers).addTo(map);
-                    that.heatmapLayer.setData(heatData);
-                    that.heatmapLayer.addTo(map);
+                    if(that.markers.length > 0) {
+                        that.locationsLayer = L.layerGroup(that.markers).addTo(map);
+                        that.heatmapLayer.setData(heatData);
+                        that.heatmapLayer.addTo(map);
+                    }
                 }
             });
+        },
+        getAreas: function(callback) {
+            this.couchRest.fetch('areas',
+                {include_docs: true},
+                function(err, res) {
+                    var areas = res.rows.filter(function(val) {
+                        return val.id.search('_design') === -1;
+                    });
+
+                    callback(areas);
+                }
+            );
         },
         resizeFile: function(file) {
             var reader = new FileReader();

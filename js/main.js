@@ -15,8 +15,9 @@ requirejs.config({
         heatmap: 'lib/heatmapjs/heatmap',
         heatmapL: 'lib/heatmapjs/heatmap-leaflet',
         QuadTree: 'lib/heatmapjs/QuadTree',
-        pouchdb: 'lib/pouchdb/src/pouchdb-nightly.min',
-        backbonepouch: 'lib/backbone-pouch/backbone-pouch'
+        pouchdb: 'lib/pouchdb/dist/pouchdb-nightly',
+        backbonepouch: 'lib/backbone-pouch/backbone-pouch',
+        CouchRest: 'lib/CouchRest/CouchRest'
     },
     shim: {
         'bootstrap': {
@@ -40,6 +41,10 @@ requirejs.config({
         },
         'config': {
             exports: 'config'
+        },
+        'CouchRest': {
+            deps: ['pouchdb'],
+            exports: 'CouchRest'
         }
     }
 });
@@ -47,12 +52,10 @@ requirejs.config({
 // Start the main app logic.
 requirejs([
     'app',
-    'pouchdb',
     'backbonepouch',
     'config'
     ],
-function   (App, PouchDB, BackbonePouch, config) {
-    window.offline = false;
+function   (App, BackbonePouch, config) {
     $.ajaxSetup({
         complete: function(response) {
             if (response.status === 0) {
