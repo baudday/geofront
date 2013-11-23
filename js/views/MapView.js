@@ -427,8 +427,7 @@ define([
                         map.removeLayer(that.heatmapLayer);
 
                         // Map the locations again
-                        var url = "/locations";
-                        that.mapLocations(url);
+                        that.mapLocations();
                     },
                     error: function (model, response) {
                         $("#error").show().html(response.responseText);
@@ -473,23 +472,14 @@ define([
             this.hidePane();
             this.useCurrentLocation();
 
-            var filter = ev.currentTarget.id;
-
             // Remove all the locations
             if(this.locationsLayer) {
                 map.removeLayer(this.locationsLayer);
                 map.removeLayer(this.heatmapLayer);
             }
 
-
-            if(filter == "all") {
-                var url = "/locations/area/" + this.area;
-            } else {
-                var url = "/locations/type/" + filter;
-            }
-
-            // Map the locations
-            this.mapLocations(url);
+            var filter = ev.currentTarget.id;
+            (filter === 'all') ? this.mapLocations() : this.mapLocations(filter);
         },
         goToArea: function () {
             var $target = $('#filterareaselect option:selected'),
@@ -506,7 +496,7 @@ define([
             map.panTo(new L.LatLng(coordinates.lat, coordinates.lon));
             map.setZoom(coordinates.zoom);
             
-            this.mapLocations("/locations/area/" + this.area);
+            this.mapLocations();
 
             // Hide the pane
             this.hidePane();
@@ -734,7 +724,7 @@ define([
                 callback();
             });
         },
-        mapLocations: function (url) {
+        mapLocations: function (filter) {
             var locations = new LocationsCollection();
             this.heatmapLayer = L.TileLayer.heatMap({
                 radius: {value: 20, absolute: false},
@@ -751,6 +741,14 @@ define([
             this.getLocations(function (err, locations) {
                 that.markers = new Array();
                 var heatData = new Array();
+
+                if(filter) {
+                    locations.rows = locations.rows.filter(
+                        function (location) {
+                            return location.value.geoJSON.properties.amenity === filter;
+                        }
+                    );
+                }
 
                 _.each(locations.rows, function (location) {
                     var geometry = location.value.geoJSON.geometry,
