@@ -168,7 +168,7 @@ define([
             'click #areanavbtn': 'toggleAreaNavPane',
             'click #listlocbtn': 'toggleLocationList',
             'click #searchlocbtn': 'toggleSearchLocations',
-            'click .mapfilter': 'filterMap',
+            'click .mapfilter': 'filterLocations',
             'change #location-image': 'handleFileSelect',
             'click #usemylocation': 'useCurrentLocation',
             'click .close-pane': 'hidePane',
