@@ -476,8 +476,10 @@ define([
             var filter = ev.currentTarget.id;
 
             // Remove all the locations
-            map.removeLayer(that.locationsLayer);
-            map.removeLayer(that.heatmapLayer);
+            if(this.locationsLayer) {
+                map.removeLayer(this.locationsLayer);
+                map.removeLayer(this.heatmapLayer);
+            }
 
 
             if(filter == "all") {
@@ -746,44 +748,42 @@ define([
                 }
             });
 
-            locations.fetch({
-                url: url,
-                success: function(locations) {
-                    that.markers = new Array();
-                    var heatData = new Array();
-                    _.each(locations.models, function(location) {
-                        var geometry = location.get('geoJSON').geometry,
-                            properties = location.get('geoJSON').properties;
+            this.getLocations(this.area, function (err, locations) {
+                that.markers = new Array();
+                var heatData = new Array();
 
-                        heatData.push({
-                            lon: geometry.coordinates[0],
-                            lat: geometry.coordinates[1],
-                            value: properties.serviceCount
-                        });
+                _.each(locations.rows, function (location) {
+                    var geometry = location.value.geoJSON.geometry,
+                        properties = location.value.geoJSON.properties;
 
-                        location.get('geoJSON').properties._id = location.get('_id');
-                        var marker = L.geoJson(location.get('geoJSON'), {
-                            _id: location.get('_id'),
-                            name: properties.name,
-                            type: properties.amenity,
-                            population: properties.population,
-                            notes: properties.notes,
-                            area: properties.area,
-                            latlng: new L.LatLng(
-                                geometry.coordinates[1],
-                                geometry.coordinates[0]
-                            ),
-                            onEachFeature: that.onEachFeature
-                        });
-
-                        marker.on('click', that.onMarkerClick);
-                        that.markers.push(marker);
+                    heatData.push({
+                        lon: geometry.coordinates[0],
+                        lat: geometry.coordinates[1],
+                        value: properties.serviceCount
                     });
-                    if(that.markers.length > 0) {
-                        that.locationsLayer = L.layerGroup(that.markers).addTo(map);
-                        that.heatmapLayer.setData(heatData);
-                        that.heatmapLayer.addTo(map);
-                    }
+
+                    location.value.geoJSON.properties._id = location.value._id;
+                    var marker = L.geoJson(location.value.geoJSON, {
+                        _id: location.value._id,
+                        name: properties.name,
+                        type: properties.amenity,
+                        population: properties.population,
+                        notes: properties.notes,
+                        area: properties.area,
+                        latlng: new L.LatLng(
+                            geometry.coordinates[1],
+                            geometry.coordinates[0]
+                        ),
+                        onEachFeature: that.onEachFeature
+                    });
+
+                    marker.on('click', that.onMarkerClick);
+                    that.markers.push(marker);
+                });
+                if(that.markers.length > 0) {
+                    that.locationsLayer = L.layerGroup(that.markers).addTo(map);
+                    that.heatmapLayer.setData(heatData);
+                    that.heatmapLayer.addTo(map);
                 }
             });
         },
@@ -799,7 +799,49 @@ define([
                 }
             );
         },
-        resizeFile: function(file) {
+        getLocations: function (area, filter, callback) {
+            window.area = area;
+
+            // filter is optional
+            if(typeof filter === 'function') {
+                callback = filter;
+                filter = undefined;
+            }
+
+            // Set the query params
+            var query = {
+                fun: {
+                    map: function (doc) {
+                        if(
+                            doc.geoJSON &&
+                            doc.geoJSON.properties.area === window.area
+                        ) {
+                            emit(doc, doc);
+                        }
+                    }
+                }
+            };
+
+            // Set the replication params
+            var rep = {
+                opts: {
+                    filter: function (doc) {
+                        if(doc.geoJSON)
+                            return doc.geoJSON.properties.area === window.area;
+                        return false;
+                    }
+                }
+            };
+
+            // Get the locations
+            this.couchRest.query('locations', query, rep, callback);
+
+            // Filter the locations layers
+            if(filter) {
+
+            }
+        },
+        resizeFile: function (file) {
             var reader = new FileReader();
             reader.onloadend = function () {
 
