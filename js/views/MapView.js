@@ -725,6 +725,11 @@ define([
             });
         },
         mapLocations: function (filter) {
+            $("#loading").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+
             var locations = new LocationsCollection();
             this.heatmapLayer = L.TileLayer.heatMap({
                 radius: {value: 20, absolute: false},
@@ -783,6 +788,8 @@ define([
                     that.heatmapLayer.setData(heatData);
                     that.heatmapLayer.addTo(map);
                 }
+
+                $("#loading").modal('hide');
             });
         },
         getAreas: function (callback) {

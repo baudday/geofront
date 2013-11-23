@@ -343,6 +343,9 @@ p {
 .content {
   display: none;
 }
+.loading {
+  text-align: center;
+}
 /* ==================== Responsive Stuff ==================== */
 @media (max-width: 979px) {
   body {
