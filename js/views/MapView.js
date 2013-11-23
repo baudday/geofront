@@ -495,7 +495,7 @@ define([
             var $target = $('#filterareaselect option:selected'),
                 coordinates = JSON.parse(unescape($target.val()));
 
-            this.area = $target.text();
+            window.area = this.area = $target.text();
 
             // Remove all the locations
             if(this.locationsLayer) {
@@ -748,7 +748,7 @@ define([
                 }
             });
 
-            this.getLocations(this.area, function (err, locations) {
+            this.getLocations(function (err, locations) {
                 that.markers = new Array();
                 var heatData = new Array();
 
@@ -799,15 +799,7 @@ define([
                 }
             );
         },
-        getLocations: function (area, filter, callback) {
-            window.area = area;
-
-            // filter is optional
-            if(typeof filter === 'function') {
-                callback = filter;
-                filter = undefined;
-            }
-
+        getLocations: function (callback) {
             // Set the query params
             var query = {
                 fun: {
@@ -835,11 +827,6 @@ define([
 
             // Get the locations
             this.couchRest.query('locations', query, rep, callback);
-
-            // Filter the locations layers
-            if(filter) {
-
-            }
         },
         resizeFile: function (file) {
             var reader = new FileReader();
