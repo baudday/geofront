@@ -1,17 +1,20 @@
 define([
+    'config',
     'jquery',
     'underscore',
     'backbone',
     'serializeForm',
     'backboneForms',
+    'CouchRest',
     'models/ServiceModel',
     'forms/NewServiceForm',
     'text!templates/forms/ServiceFormTemplate.html',
     'collections/UsersCollection',
     'collections/ServiceLogCollection',
     'text!templates/services/ServiceLogTemplate.html'
-], function($, _, Backbone, serializeForm, backboneForms, ServiceModel, NewServiceForm, ServiceFormTemplate, 
-            UsersCollection, ServiceLogCollection, ServiceLogTemplate) {
+], function(config, $, _, Backbone, serializeForm, backboneForms, CouchRest,
+            ServiceModel, NewServiceForm, ServiceFormTemplate, UsersCollection,
+            ServiceLogCollection, ServiceLogTemplate) {
 
     // Where we'll store the user's credentials
     var userCreds;
@@ -19,6 +22,10 @@ define([
 
     var ServiceLogView = Backbone.View.extend({
         el: '.body',
+        couchRest: new CouchRest({
+            couchUrl: config.couchUrl,
+            apiUrl: config.baseApiUrl
+        }),
         render: function() {
             that = this;
 
@@ -61,7 +68,15 @@ define([
             $("#addservice").html(this.serviceform.el);
 
             // Build the service log
-            this.buildServiceLog("/services/" + this.location._id);
+            this.getServices(function(err, services) {
+                var data = {
+                    services: services,
+                    userCreds: userCreds
+                };
+
+                var log = _.template(ServiceLogTemplate, data);
+                $("#servicestable").html(log);
+            });
 
             // Validate the form on change
             this.serviceform.on('change', function(form) {
@@ -118,29 +133,47 @@ define([
         filterServices: function(ev) {
             var filter = $("#servicesfilter").val();
 
-            if(filter == "All") {
-                var url = "/services/" + this.location._id;
-            } else {
-                var url = "/services/cluster/" + this.location._id + "/" + filter;
-            }
-
-            // Build the service log
-            this.buildServiceLog(url);
-        },
-        buildServiceLog: function(url) {
-            var serviceLogEntries = new ServiceLogCollection();
-            serviceLogEntries.fetch({
-                url: url,
-                success: function(entries) {
-                    var data = {
-                        entries: entries,
-                        userCreds: userCreds
-                    };
-
-                    var log = _.template(ServiceLogTemplate, data);
-                    $("#servicestable").html(log);
+            this.getServices(function(err, services) {
+                if(filter != "All") {
+                    services.rows = services.rows.filter(function(service) {
+                        return (service.value.cluster == filter || 
+                                service.value.cluster == "All")
+                    });
                 }
+
+                var data = {
+                    services: services,
+                    userCreds: userCreds
+                };
+
+                var log = _.template(ServiceLogTemplate, data);
+                $("#servicestable").html(log);
             });
+        },
+        getServices: function(callback) {
+            // Set the query params
+            var query = {
+                fun: {
+                    map: function (doc) {
+                        if(doc.loc_id && doc.loc_id === window.loc_id) {
+                            emit(doc, doc);
+                        }
+                    }
+                }
+            };
+
+            // Set the replication params
+            var rep = {
+                opts: {
+                    filter: function (doc) {
+                        if(doc.loc_id) return doc.loc_id === window.loc_id;
+                        return false;
+                    }
+                }
+            };
+
+            // Get the event services
+            this.couchRest.query('services', query, rep, callback);
         },
         updateServiceStage: function(ev) {
             var serviceId = ev.currentTarget.id;
