@@ -104,6 +104,7 @@ define([
             if(!errors) {
                 newEntry = $(ev.currentTarget).serializeForm();
                 newEntry.loc_id = this.location._id;
+                newEntry.area = this.location.area;
                 newEntry.user_id = userCreds._id;
                 newEntry.realname = userCreds.realname;
                 newEntry.institution_name = userCreds.institutionName;
