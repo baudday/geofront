@@ -162,7 +162,7 @@ define([
 
             map.on('click', onMapClick);
 
-            this.couchRest.status(function() {
+            this.couchRest.status(function () {
                 window.offline = that.offline;
                 that.stopLoading();
             });
@@ -410,35 +410,64 @@ define([
             var that = this;
             
             if(!errors) {
-                this.newLocation = $(ev.currentTarget).serializeForm();
-                if(this.newLocationImage) {
-                    this.newLocation.image = this.newLocationImage;
-                }
-
-                var location = new LocationModel();
-                location.save(this.newLocation, {
-                    success: function (location) {
-                        $("#error").hide();
-                        $("#error").removeClass("alert-error").addClass("alert-success").html("Location successfully added!").show();
-                        $("input[type='text']").val("");
-                        $("textarea").val("");
-                        $("input").closest(".control-group").removeClass("success");
-                        $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-                        $("#main-pane-content").scrollTop(0);
-
-                        // Clear the image
-                        that.newLocationImage = null;
-
-                        // Remove all the locations
-                        map.removeLayer(that.locationsLayer);
-                        map.removeLayer(that.heatmapLayer);
-
-                        // Map the locations again
-                        that.mapLocations();
-                    },
-                    error: function (model, response) {
-                        $("#error").show().html(response.responseText);
+                var tmp = $(ev.currentTarget).serializeForm();
+                this.newLocation = {
+                    geoJSON: {
+                        type: "Feature",
+                        properties: {
+                            name: tmp.name,
+                            amenity: tmp.amenity,
+                            population: tmp.population,
+                            notes: tmp.notes,
+                            area: tmp.area,
+                            serviceCount: 0,
+                            eventCount: 0
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [tmp.lon, tmp.lat]
+                        },
+                        added: new Date()
                     }
+                };
+
+                if(this.newLocationImage)
+                    this.newLocation.geoJSON.properties.image = this.newLocationImage;
+
+                this.couchRest.save('locations', this.newLocation, function(err, res) {
+                    if(err) {
+                        $("#error").show().html(err.reason);
+                        return;
+                    }
+
+                    $("#error").hide();
+
+                    $("#error").removeClass("alert-error")
+                        .addClass("alert-success")
+                        .html("Location successfully added!").show();
+
+                    $("input[type='text']").val("");
+                    $("textarea").val("");
+
+                    $("input").closest(".control-group")
+                        .removeClass("success");
+
+                    $("textarea").closest(".control-group")
+                        .removeClass("success")
+                        .find(".text-error")
+                        .html("");
+
+                    $("#main-pane-content").scrollTop(0);
+
+                    // Clear the image
+                    that.newLocationImage = null;
+
+                    // Remove all the locations
+                    map.removeLayer(that.locationsLayer);
+                    map.removeLayer(that.heatmapLayer);
+
+                    // Map the locations again
+                    that.mapLocations();
                 });
             } else {
                 $.each(errors, function (key, value) {
@@ -734,6 +763,8 @@ define([
             });
         },
         mapLocations: function (filter) {
+            if(!window.area) return;
+
             this.startLoading();
 
             var locations = new LocationsCollection();
@@ -891,13 +922,13 @@ define([
         returnFalse: function (ev) {
             return false;
         },
-        startLoading: function() {
+        startLoading: function () {
             $("#loading").modal({
                 backdrop: 'static',
                 keyboard: false
             });
         },
-        stopLoading: function() {
+        stopLoading: function () {
             $("#loading").modal('hide');
         }
     });
