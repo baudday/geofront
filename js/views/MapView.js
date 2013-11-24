@@ -85,6 +85,8 @@ define([
         }),
         area: null,
         render: function () {
+            this.startLoading();
+
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
 
@@ -725,10 +727,7 @@ define([
             });
         },
         mapLocations: function (filter) {
-            $("#loading").modal({
-                backdrop: 'static',
-                keyboard: false
-            });
+            this.startLoading();
 
             var locations = new LocationsCollection();
             this.heatmapLayer = L.TileLayer.heatMap({
@@ -789,7 +788,7 @@ define([
                     that.heatmapLayer.addTo(map);
                 }
 
-                $("#loading").modal('hide');
+                that.stopLoading();
             });
         },
         getAreas: function (callback) {
@@ -871,6 +870,15 @@ define([
         },
         returnFalse: function (ev) {
             return false;
+        },
+        startLoading: function() {
+            $("#loading").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+        },
+        stopLoading: function() {
+            $("#loading").modal('hide');
         }
     });
 
