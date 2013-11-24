@@ -162,7 +162,10 @@ define([
 
             map.on('click', onMapClick);
 
-
+            this.couchRest.status(function() {
+                window.offline = that.offline;
+                that.stopLoading();
+            });
         },
         events: {
             'submit #addlocation': 'addLocation',
