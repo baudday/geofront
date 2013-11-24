@@ -1,9 +1,11 @@
 define([
+    'config',
     'jquery',
     'underscore',
     'backbone',
     'serializeForm',
     'backboneForms',
+    'CouchRest',
     'collections/LogsCollection',
     'forms/NewLogForm',
     'text!templates/forms/AddLogTemplate.html',
@@ -19,8 +21,18 @@ define([
 
     var EventLogView = Backbone.View.extend({
         el: '.body',
-        render: function() {
+        couchRest: new CouchRest({
+            couchUrl: config.couchUrl,
+            apiUrl: config.baseApiUrl
+        }),
+        render: function () {
             that = this;
+
+            window.loc_id = this.location._id;
+
+            this.couchRest.status(function() {
+                window.offline = that.couchRest.offline;
+            });
 
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
@@ -34,8 +46,10 @@ define([
             $("#addtolog").html(this.logform.el);
 
             // Build the event log
-            var url = "/log/" + this.location._id;
-            this.buildEventLog(url);
+            this.getLogs(function(err, logs) {
+                var log = _.template(EventLogTemplate, logs);
+                $("#eventstable").html(log);
+            });
 
             // Validate the form on change
             this.logform.on('change', function (form) {
@@ -62,48 +76,72 @@ define([
                 newEntry = $(ev.currentTarget).serializeForm();
                 newEntry.loc_id = this.location._id;
                 newEntry.institution = userCreds.institutionName;
+                newEntry.area = this.location.area;
                 var entry = new LogModel();
                 entry.save(newEntry, {
-                    success: function(location) {
+                    success: function (location) {
                         $("#error").hide();
                         $("#error").removeClass("alert-error").addClass("alert-success").html("Entry successfully logged!").show();
                         $("textarea").val("");
                         $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
                         that.render();
                     },
-                    error: function(model, response) {
+                    error: function (model, response) {
                         $("#error").show().html(response.responseText);
                     }
                 });
             } else {
-                $.each(errors, function(key, value) {
+                $.each(errors, function (key, value) {
                     $("#addlogentry [name='" + key + "']").closest(".control-group").addClass("error");
                     $("#addlogentry [name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                 });
             }
             return false;
         },
-        filterEvents: function(ev) {
+        filterEvents: function (ev) {
             var filter = $("#eventsfilter").val();
 
-            if(filter == "All") {
-                var url = "/log/" + this.location._id;
-            } else {
-                var url = "/log/cluster/" + this.location._id + "/" + filter;
-            }
-
-            // Build the service log
-            this.buildEventLog(url);
-        },
-        buildEventLog: function(url) {
-            var logentries = new LogsCollection();
-            logentries.fetch({
-                url: url,
-                success: function(entries) {
-                    var log = _.template(EventLogTemplate, entries);
+            // Build the event log
+            this.getLogs(function(err, logs) {
+                if(filter == "All") {
+                    var log = _.template(EventLogTemplate, logs);
                     $("#eventstable").html(log);
+                } else {
+                    logs.rows = logs.rows.filter(function(log) {
+                        return (log.value.cluster == filter ||
+                                log.value.cluster == "All")
+                    });
+
+                    var log = _.template(EventLogTemplate, logs)
                 }
+
+                $("#eventstable").html(log);
             });
+        },
+        getLogs: function (callback) {
+            // Set the query params
+            var query = {
+                fun: {
+                    map: function (doc) {
+                        if(doc.loc_id && doc.loc_id === window.loc_id) {
+                            emit(doc, doc);
+                        }
+                    }
+                }
+            };
+
+            // Set the replication params
+            var rep = {
+                opts: {
+                    filter: function (doc) {
+                        if(doc.loc_id) return doc.loc_id === window.loc_id;
+                        return false;
+                    }
+                }
+            };
+
+            // Get the event logs
+            this.couchRest.query('logs', query, rep, callback);
         }
     });
     return EventLogView;
