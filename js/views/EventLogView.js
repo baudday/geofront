@@ -9,8 +9,9 @@ define([
     'text!templates/forms/AddLogTemplate.html',
     'models/LogModel',
     'text!templates/eventlog/EventLogTemplate.html'
-], function($, _, Backbone, serializeForm, backboneForms, LogsCollection, NewLogForm, AddLogTemplate, LogModel,
-            EventLogTemplate) {
+], function (config, $, _, Backbone, serializeForm, backboneForms, CouchRest,
+             LogsCollection, NewLogForm, AddLogTemplate, LogModel,
+             EventLogTemplate) {
 
     // Where we'll store the user's credentials
     var userCreds;
@@ -37,12 +38,12 @@ define([
             this.buildEventLog(url);
 
             // Validate the form on change
-            this.logform.on('change', function(form) {
+            this.logform.on('change', function (form) {
                 $("#addlogentry .control-group").removeClass("error").addClass("success");
                 $("#addlogentry input").closest(".control-group").find(".text-error").html("");
                 var errors = that.logform.commit();
                 if(errors) {
-                    $.each(errors, function(key, value) {
+                    $.each(errors, function (key, value) {
                         $("#addlogentry [name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
                         $("#addlogentry [name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                     });
@@ -53,7 +54,7 @@ define([
             'submit #addlogentry': 'addLogEntry',
             'change #eventsfilter': 'filterEvents'
         },
-        addLogEntry: function(ev) {
+        addLogEntry: function (ev) {
             var errors = this.logform.commit();
             var that = this;
             
