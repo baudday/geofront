@@ -505,6 +505,8 @@ define([
             
             this.mapLocations();
 
+            if(!window.offline) this.replicateLogs();
+
             // Hide the pane
             this.hidePane();
         },
@@ -836,6 +838,19 @@ define([
 
             // Get the locations
             this.couchRest.query('locations', query, rep, callback);
+        },
+        replicateLogs: function () {
+            // Set the replication params
+            var opts = {
+                filter: function (doc) {
+                    if(doc.area) return doc.area === window.area;
+                    return false;
+                }
+            };
+
+            // Get the event & service logs
+            this.couchRest.replicateFrom('logs', opts);
+            this.couchRest.replicateFrom('services', opts);
         },
         resizeFile: function (file) {
             var reader = new FileReader();
