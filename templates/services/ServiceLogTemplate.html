@@ -1,45 +1,45 @@
-<% _.each(entries.models, function(entry) {%>
+<% _.each(services.rows, function(entry) {%>
     <tr>
         <td>
             <small class='muted'>
-                <%= entry.get('institution_name') %><br />
-                <%= entry.get('realname') %><br />
-                <%= new Date(entry.get('date')).toLocaleString() %>
+                <%= entry.value.institution_name %><br />
+                <%= entry.value.realname %><br />
+                <%= new Date(entry.value.date).toLocaleString() %>
             </small>
         </td>
         <td>
             <strong>Cluster:</strong>
             <blockquote>
-                <%= entry.get('cluster') %>
+                <%= entry.value.cluster %>
             </blockquote>
 
             <strong>Current Stage:</strong>
             <blockquote>
-                <% if(entry.get('stage') == "Plan Pending") { %>
-                    <%= entry.get('stage') %>
+                <% if(entry.value.stage == "Plan Pending") { %>
+                    <%= entry.value.stage %>
                 <% }
-                else if(userCreds._id == entry.get('user_id') || userCreds.level == "clusterlead") { %>
-                    <div id="<%= entry.get('_id') %>-stage-error" class="alert alert-error" style="display:none;"></div>
-                    <select class="updateservicestage" id="<%= entry.get('_id') %>">
-                        <option value="Assessment" <% if(entry.get('stage') == "Assessment") { %> selected <% } %>>Assessment</option>
-                        <option value="Planned" <% if(entry.get('stage') == "Planned") { %> selected <% } %>>Planned</option>
-                        <option value="Commenced" <% if(entry.get('stage') == "Commenced") { %> selected <% } %>>Commenced</option>
+                else if(userCreds._id == entry.value.user_id || userCreds.level == "clusterlead") { %>
+                    <div id="<%= entry.value._id %>-stage-error" class="alert alert-error" style="display:none;"></div>
+                    <select class="updateservicestage" id="<%= entry.value._id %>">
+                        <option value="Assessment" <% if(entry.value.stage == "Assessment") { %> selected <% } %>>Assessment</option>
+                        <option value="Planned" <% if(entry.value.stage == "Planned") { %> selected <% } %>>Planned</option>
+                        <option value="Commenced" <% if(entry.value.stage == "Commenced") { %> selected <% } %>>Commenced</option>
                     </select>
                 <% } else { %>
-                    <%= entry.get('stage') %>
+                    <%= entry.value.stage %>
                 <% } %>
             </blockquote>
 
             <strong>Description:</strong>
             <blockquote>
-                <%= entry.get('description') %>
+                <%= entry.value.description %>
             </blockquote>
 
-            <strong class="expand-contact">Contact <%= entry.get('contact').realname %> [<span>+</span>]</strong>
+            <strong class="expand-contact">Contact <%= entry.value.contact.realname %> [<span>+</span>]</strong>
             <div class='contact'>
                 <blockquote>
-                    Phone: <a href="tel:<%= entry.get('contact').phone %>"><%= entry.get('contact').phone %></a><br />
-                    Email: <a href="mailto: <%= entry.get('contact').email %>"><%= entry.get('contact').email %></a>
+                    Phone: <a href="tel:<%= entry.value.contact.phone %>"><%= entry.value.contact.phone %></a><br />
+                    Email: <a href="mailto: <%= entry.value.contact.email %>"><%= entry.value.contact.email %></a>
                 </blockquote>
             </div>
         </td>
