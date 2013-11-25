@@ -73,22 +73,35 @@ define([
             var that = this;
             
             if(!errors) {
-                newEntry = $(ev.currentTarget).serializeForm();
-                newEntry.loc_id = this.location._id;
-                newEntry.institution = userCreds.institutionName;
-                newEntry.area = this.location.area;
-                var entry = new LogModel();
-                entry.save(newEntry, {
-                    success: function (location) {
-                        $("#error").hide();
-                        $("#error").removeClass("alert-error").addClass("alert-success").html("Entry successfully logged!").show();
-                        $("textarea").val("");
-                        $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-                        that.render();
-                    },
-                    error: function (model, response) {
-                        $("#error").show().html(response.responseText);
+                var tmp = $(ev.currentTarget).serializeForm();
+                var newEntry = {
+                    "loc_id": this.location._id,
+                    "name": userCreds.realname,
+                    "date": new Date(),
+                    "message": tmp.message,
+                    "cluster": tmp.cluster,
+                    "institution": userCreds.institutionName,
+                    "area": this.location.area
+                };
+
+                this.couchRest.save('logs', newEntry, function(err, res) {
+                    if(err) {
+                        $("#error").show().html(err.reason);
+                        return;
                     }
+
+                    $("#error").hide();
+
+                    $("#error").removeClass("alert-error")
+                        .addClass("alert-success")
+                        .html("Entry successfully logged!").show();
+
+                    $("textarea").val("");
+
+                    $("textarea").closest(".control-group")
+                        .removeClass("success").find(".text-error").html("");
+
+                    that.render();
                 });
             } else {
                 $.each(errors, function (key, value) {
