@@ -162,8 +162,8 @@ define([
 
             map.on('click', onMapClick);
 
-            this.couchRest.status(function () {
-                window.offline = that.offline;
+            this.couchRest.status(function (offline) {
+                window.offline = offline;
                 that.stopLoading();
             });
         },

@@ -30,8 +30,8 @@ define([
 
             window.loc_id = this.location._id;
 
-            this.couchRest.status(function() {
-                window.offline = that.couchRest.offline;
+            this.couchRest.status(function(offline) {
+                window.offline = offline;
             });
 
             // Get the user's credentials
