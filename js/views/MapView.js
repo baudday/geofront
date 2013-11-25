@@ -164,6 +164,19 @@ define([
 
             this.couchRest.status(function (offline) {
                 window.offline = offline;
+
+                if(!offline) {
+                    $.ajax({
+                        url: config.baseApiUrl +
+                            '/users/institution/' + userCreds.institution,
+                        success: function(res) {
+                            that.couchRest.bulkSave('inst_users', {docs: res});
+                        },
+                        error: function(res) {
+                            window.offline = that.couchRest.offline = true;
+                        }
+                    });
+                }
                 that.stopLoading();
             });
         },
