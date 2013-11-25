@@ -43,26 +43,29 @@ define([
                 model: new ServiceModel()
             }).render();
 
-            // Create the users collection
-            var usersCollection = new UsersCollection();
-
             // Get the users
-            usersCollection.fetch({
-                url: "/users/institution/" + userCreds.institution,
-                success: function(users) {
+            this.couchRest.fetch('inst_users',
+                {
+                    include_docs: true,
+                    local: true
+                }, function(err, res) {
                     var options = [];
                     options.push({val: "", label: "Select One"});
 
                     // Create the options array
-                    $.each(users.models, function(index, value) {
-                        var label = value.attributes.realname + " (" + value.attributes.name + ")";
-                        options.push({val: value.attributes._id, label: label});
+                    $.each(res.rows, function(index, value) {
+                        var label = value.doc.realname +
+                            " (" + value.doc.name + ")";
+
+                        options.push({
+                            val: value.doc._id,
+                            label: label
+                        });
                     });                    
 
                     // Add the options to the contact field
                     that.serviceform.fields.contact.editor.setOptions(options);
-                }
-            });
+                });
 
             // Render the form
             $("#addservice").html(this.serviceform.el);
