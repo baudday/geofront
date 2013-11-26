@@ -213,30 +213,43 @@ define([
         },
         updateServiceStage: function(ev) {
             var serviceId = ev.currentTarget.id;
-            var service = new ServiceModel();
-            service.id = serviceId;
             var stage = $("#" + serviceId).val();
 
-            if(stage == "Planned") {
-                $(ev.target).parent().html("Plan Pending");
-            }
-
-            service.save({
-                stage: stage,
-                success: function() {
-                    console.log("success");
-                    $("#stage-error").hide();
-                    $("#stage-error").removeClass("alert-error").addClass("alert-success").html("Stage successfully updated!").show();
-                },
-                error: function() {
-                    console.log("fail");
-                    $("#stage-error").show().removeClass("alert-success").addClass("alert-error").html("Oops! Looks like there was a problem. Please try again.").show();
+            this.couchRest.get('services', serviceId, function(err, doc) {
+                if(err) {
+                    $("#stage-error").show().removeClass("alert-success")
+                        .addClass("alert-error")
+                        .html("Oops! Looks like there was a problem. Please try again.")
+                        .show();
+                    return false;
                 }
-            });
 
-            $("#" + serviceId + "-stage-error").hide();
-            $("#" + serviceId + "-stage-error").removeClass("alert-error").addClass("alert-success").html("Stage successfully updated!").show();
-            setTimeout(function() {$("#" + serviceId + "-stage-error").fadeOut('fast')}, 2000);
+                doc.stage = stage;
+
+                if(stage === 'Planned') {
+                    doc.confirmed = false;
+                    $(ev.target).parent().html("Plan Pending");
+                }
+
+                that.couchRest.save('services', doc, function(err, res) {
+                    if(err) {
+                        $("#stage-error").show().removeClass("alert-success")
+                            .addClass("alert-error")
+                            .html("Oops! Looks like there was a problem. Please try again.")
+                            .show();
+                        return false;
+                    }
+
+                    $("#" + serviceId + "-stage-error").hide();
+                    $("#" + serviceId + "-stage-error")
+                        .removeClass("alert-error").addClass("alert-success")
+                        .html("Stage successfully updated!").show();
+
+                    setTimeout(function() {
+                        $("#" + serviceId + "-stage-error").fadeOut('fast')
+                    }, 2000);
+                });
+            });
         },
         showServiceContact: function(ev) {
             var target = ev.target;
