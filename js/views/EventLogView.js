@@ -86,13 +86,13 @@ define([
 
                 this.couchRest.save('logs', newEntry, function(err, res) {
                     if(err) {
-                        $("#error").show().html(err.reason);
+                        $("#event-error").show().html(err.reason);
                         return;
                     }
 
-                    $("#error").hide();
+                    $("#event-error").hide();
 
-                    $("#error").removeClass("alert-error")
+                    $("#event-error").removeClass("alert-error")
                         .addClass("alert-success")
                         .html("Entry successfully logged!").show();
 
