@@ -1,0 +1,11 @@
+CACHE MANIFEST
+
+NETWORK:
+*
+
+CACHE:
+index.php
+./css/
+./img/
+./js/
+./templates/
