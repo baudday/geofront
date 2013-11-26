@@ -196,7 +196,20 @@ define([
             };
 
             // Get the event services
-            this.couchRest.query('services', query, rep, callback);
+            this.couchRest.query('services', query, rep, function(err, res) {
+                res.rows.map(function(service) {
+                    if(
+                       service.value.confirmed == false &&
+                       service.value.stage == "Planned"
+                      ) {
+                        service.value.stage = "Plan Pending";
+                    }
+
+                    return service;
+                });
+
+                callback(err, res);
+            });
         },
         updateServiceStage: function(ev) {
             var serviceId = ev.currentTarget.id;
