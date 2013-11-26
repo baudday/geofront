@@ -62,7 +62,7 @@ define([
                             " (" + value.doc.name + ")";
 
                         options.push({
-                            val: value.doc._id,
+                            val: escape(JSON.stringify(value.doc)),
                             label: label
                         });
                     });                    
@@ -109,26 +109,41 @@ define([
             var that = this;
             
             if(!errors) {
-                newEntry = $(ev.currentTarget).serializeForm();
-                newEntry.loc_id = this.location._id;
-                newEntry.area = this.location.area;
-                newEntry.user_id = userCreds._id;
-                newEntry.realname = userCreds.realname;
-                newEntry.institution_name = userCreds.institutionName;
-                newEntry.institution_id = userCreds.institution;
+                var tmp = $(ev.currentTarget).serializeForm();
+                tmp.contact = JSON.parse(unescape(tmp.contact));
+                var newEntry = {
+                    cluster: tmp.cluster,
+                    institution_id: userCreds.institution,
+                    institution_name: userCreds.institutionName,
+                    loc_id: this.location._id,
+                    area: this.location.area,
+                    stage: tmp.stage,
+                    description: tmp.description,
+                    contact: tmp.contact,
+                    confirmed: "false",
+                    user_id: userCreds._id,
+                    realname: userCreds.realname,
+                    date: new Date()
+                };
 
-                var entry = new ServiceModel();
-                entry.save(newEntry, {
-                    success: function(location) {
-                        $("#error").hide();
-                        $("#error").removeClass("alert-error").addClass("alert-success").html("Entry successfully logged!").show();
-                        $("textarea").val("");
-                        $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-                        that.render();
-                    },
-                    error: function(model, response) {
-                        $("#error").show().html(response.responseText);
+                this.couchRest.save('services', newEntry, function(err, res) {
+                    if(err) {
+                        $("#service-error").show().html(err.reason);
+                        return;
                     }
+
+                    $("#service-error").hide();
+
+                    $("#service-error").removeClass("alert-error")
+                        .addClass("alert-success")
+                        .html("Entry successfully logged!").show();
+
+                    $("textarea").val("");
+
+                    $("textarea").closest(".control-group")
+                        .removeClass("success").find(".text-error").html("");
+
+                    that.render();
                 });
             } else {
                 $.each(errors, function(key, value) {
