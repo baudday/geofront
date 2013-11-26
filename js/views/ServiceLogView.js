@@ -32,6 +32,10 @@ define([
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
 
+            this.couchRest.status(function(offline) {
+                window.offline = offline;
+            });
+
             var data = this.location;
             data.institution = userCreds.institutionName;
 
