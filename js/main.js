@@ -4,7 +4,6 @@ requirejs.config({
         jquery: "lib/jquery/jquery",
         underscore: "lib/underscore-amd/underscore",
         backbone: "lib/backbone-amd/backbone",
-        jquery: "lib/jquery/jquery",
         json2: "lib/json2/json2",
         bootstrap: "lib/bootstrap",
         templates: '../templates',
