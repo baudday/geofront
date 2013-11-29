@@ -166,6 +166,7 @@ define([
                 window.offline = offline;
 
                 if(!offline) {
+                    // Update the institution's user list
                     $.ajax({
                         url: config.baseApiUrl +
                             '/users/institution/' + userCreds.institution,
@@ -176,6 +177,9 @@ define([
                             window.offline = that.couchRest.offline = true;
                         }
                     });
+
+                    // Sync data back to server, omit inst_users db
+                    that.couchRest.syncToRemote(['inst_users']);
                 }
                 that.stopLoading();
             });
