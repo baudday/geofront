@@ -37,9 +37,9 @@ define([
                     }).addTo(map);
 
                     // DEBUG
-                    map.on('drag', function() {
-                        console.log(this.getCenter());
-                    });
+                    // map.on('drag', function() {
+                    //     console.log(this.getCenter());
+                    // });
                 }
             });
         },
