@@ -346,6 +346,13 @@ p {
 .loading {
   text-align: center;
 }
+.package {
+  width: 100%;
+}
+.tile-map {
+  width: 100%;
+  height: 200px;
+}
 /* ==================== Responsive Stuff ==================== */
 @media (max-width: 979px) {
   body {

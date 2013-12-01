@@ -15,10 +15,12 @@ define([
     'views/ContactView',
     'views/ClusterLeadView',
     'views/AdminView',
-    'views/ConfirmView'
-], function($, _, Backbone, HomeView, MapView, InstitutionsView, RegisterView, LoginView, LogoutView, 
-            AccountView, SuperAdminView, ServicesView, AboutView, ContactView, ClusterLeadView, 
-            AdminView, ConfirmView) {
+    'views/ConfirmView',
+    'views/TilesView'
+], function($, _, Backbone, HomeView, MapView, InstitutionsView, RegisterView,
+            LoginView, LogoutView, AccountView, SuperAdminView, ServicesView,
+            AboutView, ContactView, ClusterLeadView, AdminView, ConfirmView,
+            TilesView) {
     var Router = Backbone.Router.extend({
         routes: {
             '': 'home',
@@ -33,7 +35,8 @@ define([
             'SuperAdmin': 'superadmin',
             'Admin': 'admin',
             'ClusterLead': 'clusterlead',
-            'Confirm/:code': 'confirm'
+            'Confirm/:code': 'confirm',
+            'TilePackages': 'tiles'
         }
     });
 
@@ -128,6 +131,11 @@ define([
         router.on('route:confirm', function() {
             var confirmView = new ConfirmView();
             confirmView.render();
+        });
+
+        router.on('route:tiles', function() {
+            var tilesView = new TilesView();
+            tilesView.render();
         });
 
         Backbone.history.start();
