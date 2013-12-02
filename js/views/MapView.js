@@ -11,14 +11,15 @@ define([
     'text!templates/forms/AreaFilterFormTemplate.html', 'forms/NewAreaForm',
     'text!templates/forms/AddAreaTemplate.html', 'models/AreaModel',
     'text!templates/forms/SearchLocationsTemplate.html',
-    'forms/SearchLocationsForm'
+    'forms/SearchLocationsForm', 'ReliefMap', 'IDBTilesLayer'
 ], function (config, $, _, Backbone, Bootstrap, L, heatmap, heatmapL,
             BackbonePouch, CouchRest, MapTemplate, LoginModel,
             LocationsCollection, LocationModel, AddLocationTemplate,
             NewLocationForm, EventLogView, ServiceLogView, AreasCollection,
             LogsTemplate, FiltersTemplate, AreasTemplate, AreaFilterForm,
             AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
-            SearchLocationsTemplate, SearchLocationsForm){
+            SearchLocationsTemplate, SearchLocationsForm, ReliefMap,
+            IDBTilesLayer){
 
     var that;
 
@@ -71,6 +72,7 @@ define([
             couchUrl: config.couchUrl,
             apiUrl: config.baseApiUrl
         }),
+        rmap: new ReliefMap(),
         locationsLayer: L.layerGroup(),
         heatmapLayer: L.TileLayer.heatMap({
             radius: {value: 20, absolute: false},
@@ -105,17 +107,10 @@ define([
 
             // Create the map
             map = L.map('map', {
-                dragging: true
+                dragging: true,
+                minZoom: 13,
+                maxZoom: 17
             });
-
-            // Add layer to map
-            L.tileLayer(
-                '//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png'
-            ).addTo(map);
-
-            // Find the user's location before mapping locations. 
-            // Locations are more important and need to be on top.
-            map.locate({setView: true, maxZoom: 15});
 
             function onLocationFound(e) {
                 // Set the latlng to be used for other stuff!
@@ -181,7 +176,16 @@ define([
                     // Sync data back to server, omit inst_users db
                     that.couchRest.syncToRemote(['inst_users']);
                 }
-                that.stopLoading();
+
+                that.rmap.update({offline: offline});
+                that.rmap.getTileLayer(function(lyr) {
+                    if(lyr) {
+                        lyr.addTo(map);
+                        map.locate({setView: true});
+                    }
+
+                    that.stopLoading();
+                });
             });
         },
         events: {
@@ -535,6 +539,8 @@ define([
             (filter === 'all') ? this.mapLocations() : this.mapLocations(filter);
         },
         goToArea: function () {
+            this.startLoading();
+
             var $target = $('#filterareaselect option:selected'),
                 coordinates = JSON.parse(unescape($target.val()));
 
@@ -546,8 +552,12 @@ define([
                 map.removeLayer(this.heatmapLayer);
             }
 
-            map.panTo(new L.LatLng(coordinates.lat, coordinates.lon));
-            map.setZoom(coordinates.zoom);
+            this.rmap.update({area: this.area});
+            map.setView([coordinates.lat, coordinates.lon], coordinates.zoom);
+            this.rmap.getTileLayer(function(lyr) {
+                lyr.addTo(map);
+                that.stopLoading();
+            });
             
             this.mapLocations();
 
@@ -782,8 +792,6 @@ define([
         mapLocations: function (filter) {
             if(!window.area) return;
 
-            this.startLoading();
-
             var locations = new LocationsCollection();
             this.heatmapLayer = L.TileLayer.heatMap({
                 radius: {value: 20, absolute: false},
@@ -842,8 +850,6 @@ define([
                     that.heatmapLayer.setData(heatData);
                     that.heatmapLayer.addTo(map);
                 }
-
-                that.stopLoading();
             });
         },
         getAreas: function (callback) {

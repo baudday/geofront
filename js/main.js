@@ -16,7 +16,9 @@ requirejs.config({
         QuadTree: 'lib/heatmapjs/QuadTree',
         pouchdb: 'lib/pouchdb/dist/pouchdb-nightly',
         backbonepouch: 'lib/backbone-pouch/backbone-pouch',
-        CouchRest: 'lib/CouchRest/CouchRest'
+        CouchRest: 'lib/CouchRest/CouchRest',
+        IDBTilesLayer: 'lib/IDBTilesLayer/L.TileLayer.IDBTiles',
+        ReliefMap: 'lib/ReliefMap/ReliefMap'
     },
     shim: {
         'bootstrap': {
@@ -31,6 +33,9 @@ requirejs.config({
         'heatmapL': {
             deps: ['leaflet', 'heatmap', 'QuadTree']
         },
+        'IDBTilesLayer': {
+            deps: ['leaflet']
+        },
         'pouchdb': {
             exports: 'Pouch'
         },
@@ -43,7 +48,9 @@ requirejs.config({
         },
         'CouchRest': {
             deps: ['pouchdb'],
-            exports: 'CouchRest'
+        },
+        'ReliefMap': {
+            deps: ['leaflet']
         }
     }
 });
