@@ -3,6 +3,6 @@ var config = {
     couchUrl: 'http://localhost:5984/'
 };
 
-define('config', [], function() {
+define("config", [], function() {
     return config;
 });

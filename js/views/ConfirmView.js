@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'models/ConfirmModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "models/ConfirmModel"
 ], function($, _, Backbone, ConfirmModel){
     var that;
     var ConfirmView = Backbone.View.extend({

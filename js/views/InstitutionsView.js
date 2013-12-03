@@ -1,11 +1,11 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'collections/InstitutionsCollection',
-    'text!templates/institutions/InstitutionsTemplate.html',
-    'collections/UsersCollection'
+    "jquery",
+    "underscore",
+    "backbone",
+    "bootstrap",
+    "collections/InstitutionsCollection",
+    "text!../../templates/institutions/InstitutionsTemplate.html",
+    "collections/UsersCollection"
 ], function($, _, Backbone, Bootstrap, InstitutionsCollection, InstitutionsTemplate, UsersCollection){
 
     var InstitutionsView = Backbone.View.extend({

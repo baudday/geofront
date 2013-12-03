@@ -1,7 +1,7 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone'
+    "jquery",
+    "underscore",
+    "backbone"
 ], function($, _, Backbone){
 
     var LogModel = Backbone.Model.extend({

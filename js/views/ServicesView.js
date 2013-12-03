@@ -1,15 +1,15 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'text!templates/services/ServicesTemplate.html',
-    'models/ServiceModel',
-    'forms/NewServiceForm',
-    'text!templates/forms/ServiceFormTemplate.html',
-    'collections/AreasCollection',
-    'collections/UsersCollection'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "text!../../templates/services/ServicesTemplate.html",
+    "models/ServiceModel",
+    "forms/NewServiceForm",
+    "text!../../templates/forms/ServiceFormTemplate.html",
+    "collections/AreasCollection",
+    "collections/UsersCollection"
 ], function($, _, Backbone, serializeForm, backboneForms, ServicesTemplate, ServiceModel, 
             NewServiceForm, ServiceFormTemplate, AreasCollection, UsersCollection){
 

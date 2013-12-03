@@ -6,5 +6,6 @@
         {
             name: "main"
         }
-    ]
+    ],
+    mainConfigFile: "../js/main.js"
 })

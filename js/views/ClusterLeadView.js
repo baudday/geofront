@@ -1,12 +1,12 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'text!templates/account/ClusterLeadTemplate.html',
-    'collections/ServiceLogCollection',
-    'models/ServiceModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "text!../../templates/account/ClusterLeadTemplate.html",
+    "collections/ServiceLogCollection",
+    "models/ServiceModel"
 ], function($, _, Backbone, serializeForm, backboneForms, ClusterLeadTemplate, ServiceLogCollection, ServiceModel) {
 
     var that;

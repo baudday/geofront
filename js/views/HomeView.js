@@ -1,9 +1,9 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'text!templates/home/HomeTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "bootstrap",
+    "text!../../templates/home/HomeTemplate.html"
 ], function($, _, Backbone, Bootstrap, HomeTemplate){
 
     // The map

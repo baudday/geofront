@@ -1,16 +1,16 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'serializeForm',
-    'backboneForms',
-    'collections/InstitutionsCollection',
-    'forms/NewUserForm',
-    'models/UserModel',
-    'text!templates/forms/RegisterTemplate.html',
-    'text!templates/static/ThankYouTemplate.html',
-    'text!templates/static/OfflineTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "bootstrap",
+    "serializeForm",
+    "backboneForms",
+    "collections/InstitutionsCollection",
+    "forms/NewUserForm",
+    "models/UserModel",
+    "text!../../templates/forms/RegisterTemplate.html",
+    "text!../../templates/static/ThankYouTemplate.html",
+    "text!../../templates/static/OfflineTemplate.html"
 ], function($, _, Backbone, Bootstrap, serializeForm, backboneForms, InstitutionsCollection, NewUserForm, 
             UserModel, RegisterTemplate, ThankYouTemplate, OfflineTemplate) {
     // The form

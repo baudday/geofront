@@ -1,14 +1,14 @@
 define([
-    'jquery', 
-    'underscore', 
-    'backbone',
-    'router',
-    'bootstrap',
-    'text!templates/header.html',
-    'jqcookie',
-    'pouchdb'
+    "jquery", 
+    "underscore", 
+    "backbone",
+    "router",
+    "bootstrap",
+    "text!../templates/header.html",
+    "jqcookie",
+    "pouchdb"
 ], function($, _, Backbone, Router, Bootstrap, HeaderTemplate, Cookie, PouchDB){
-    return { 
+    return {
         initialize: function(){
             // Parse header
             var header = _.template(HeaderTemplate);

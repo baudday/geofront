@@ -1,14 +1,14 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'forms/LoginForm',
-    'models/LoginModel',
-    'text!templates/forms/LoginTemplate.html',
-    'text!templates/header.html',
-    'text!templates/static/OfflineTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "forms/LoginForm",
+    "models/LoginModel",
+    "text!../../templates/forms/LoginTemplate.html",
+    "text!../../templates/header.html",
+    "text!../../templates/static/OfflineTemplate.html"
 ], function($, _, Backbone, serializeForm, backboneForms, LoginForm, LoginModel, LoginTemplate, 
             HeaderTemplate, OfflineTemplate){
     var form;

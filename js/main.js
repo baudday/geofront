@@ -6,62 +6,62 @@ requirejs.config({
         backbone: "lib/backbone-amd/backbone",
         json2: "lib/json2/json2",
         bootstrap: "lib/bootstrap",
-        templates: '../templates',
-        serializeForm: 'lib/serializeForm',
-        backboneForms: 'lib/backbone-forms.min',
-        leaflet: 'lib/leaflet/dist/leaflet',
-        jqcookie: 'lib/jquery-cookie/jquery.cookie',
-        heatmap: 'lib/heatmapjs/heatmap',
-        heatmapL: 'lib/heatmapjs/heatmap-leaflet',
-        QuadTree: 'lib/heatmapjs/QuadTree',
-        pouchdb: 'lib/pouchdb/dist/pouchdb-nightly',
-        backbonepouch: 'lib/backbone-pouch/backbone-pouch',
-        CouchRest: 'lib/CouchRest/CouchRest',
-        IDBTilesLayer: 'lib/IDBTilesLayer/L.TileLayer.IDBTiles',
-        ReliefMap: 'lib/ReliefMap/ReliefMap'
+        templates: "../templates",
+        serializeForm: "lib/serializeForm",
+        backboneForms: "lib/backbone-forms.min",
+        leaflet: "lib/leaflet/dist/leaflet",
+        jqcookie: "lib/jquery-cookie/jquery.cookie",
+        heatmap: "lib/heatmapjs/heatmap",
+        heatmapL: "lib/heatmapjs/heatmap-leaflet",
+        QuadTree: "lib/heatmapjs/QuadTree",
+        pouchdb: "lib/pouchdb/dist/pouchdb-nightly",
+        CouchRest: "lib/CouchRest/CouchRest",
+        IDBTilesLayer: "lib/IDBTilesLayer/L.TileLayer.IDBTiles",
+        ReliefMap: "lib/ReliefMap/ReliefMap"
     },
     shim: {
-        'bootstrap': {
+        bootstrap: {
             deps: ['jquery']
         },
-        'leaflet': {
+        leaflet: {
             exports: 'L'
         },
-        'jqcookie': {
+        jqcookie: {
             deps: ['jquery']
         },
-        'heatmapL': {
+        heatmapL: {
             deps: ['leaflet', 'heatmap', 'QuadTree']
         },
-        'IDBTilesLayer': {
+        IDBTilesLayer: {
             deps: ['leaflet']
         },
-        'pouchdb': {
+        pouchdb: {
             exports: 'Pouch'
         },
-        'backbonepouch': {
-            deps: ['pouchdb'], 
-            exports: 'BackbonePouch'
-        },
-        'config': {
+        config: {
             exports: 'config'
         },
-        'CouchRest': {
+        CouchRest: {
             deps: ['pouchdb'],
         },
-        'ReliefMap': {
+        ReliefMap: {
             deps: ['leaflet']
+        },
+        backboneForms: {
+            deps: ['jquery', 'underscore', 'backbone']
+        },
+        serializeForm: {
+            deps: ['jquery']
         }
     }
 });
 
 // Start the main app logic.
 requirejs([
-    'app',
-    'backbonepouch',
-    'config'
+    "app",
+    "config"
     ],
-function   (App, BackbonePouch, config) {
+function (App, config) {
     $.ajaxSetup({
         complete: function(response) {
             if (response.status === 0) {

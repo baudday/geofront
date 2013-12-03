@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'backboneForms'
+    "jquery",
+    "underscore",
+    "backbone",
+    "backboneForms"
 ], function($, _, Backbone, backboneForms){
     var NewLogForm = Backbone.Form.extend({
         schema: {

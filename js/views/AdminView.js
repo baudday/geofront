@@ -1,14 +1,14 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'text!templates/account/AdminTemplate.html',
-    'forms/AddApprovedUserForm',
-    'models/ApprovedUserModel',
-    'text!templates/forms/AddApprovedUserTemplate.html',
-    'models/InstitutionModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "text!../../templates/account/AdminTemplate.html",
+    "forms/AddApprovedUserForm",
+    "models/ApprovedUserModel",
+    "text!../../templates/forms/AddApprovedUserTemplate.html",
+    "models/InstitutionModel"
 ], function($, _, Backbone, serializeForm, backboneForms, AdminTemplate, AddApprovedUserForm,
             ApprovedUserModel, AddApprovedUserTemplate, InstitutionModel){
     var that;

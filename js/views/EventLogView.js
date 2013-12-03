@@ -1,16 +1,16 @@
 define([
-    'config',
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'CouchRest',
-    'collections/LogsCollection',
-    'forms/NewLogForm',
-    'text!templates/forms/AddLogTemplate.html',
-    'models/LogModel',
-    'text!templates/eventlog/EventLogTemplate.html'
+    "config",
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "CouchRest",
+    "collections/LogsCollection",
+    "forms/NewLogForm",
+    "text!../../templates/forms/AddLogTemplate.html",
+    "models/LogModel",
+    "text!../../templates/eventlog/EventLogTemplate.html"
 ], function (config, $, _, Backbone, serializeForm, backboneForms, CouchRest,
              LogsCollection, NewLogForm, AddLogTemplate, LogModel,
              EventLogTemplate) {

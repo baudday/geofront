@@ -1,11 +1,11 @@
 define([
-    'config',
-    'jquery',
-    'underscore',
-    'backbone',
-    'CouchRest',
-    'text!templates/tiles/TilesTemplate.html',
-    'text!templates/static/OfflineTemplate.html'
+    "config",
+    "jquery",
+    "underscore",
+    "backbone",
+    "CouchRest",
+    "text!../../templates/tiles/TilesTemplate.html",
+    "text!../../templates/static/OfflineTemplate.html"
 ], function(config, $, _, Backbone, CouchRest, TilesTemplate, OfflineTemplate) {
     var TilesView = Backbone.View.extend({
         el: '.body',
