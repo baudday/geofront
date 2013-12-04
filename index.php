@@ -6,9 +6,9 @@
         <!-- Bootstrap -->
         <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
-        <link rel="stylesheet" href="./js/lib/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="./js/lib/bower_components/leaflet/dist/leaflet.css" />
         <!--[if lte IE 8]>
-            <link rel="stylesheet" href="./js/lib/leaflet/dist/leaflet.ie.css" />
+            <link rel="stylesheet" href="./js/lib/bower_components/leaflet/dist/leaflet.ie.css" />
         <![endif]-->
         <link rel="stylesheet" type="text/css" href="css/custom.css">
         <link href="http://vjs.zencdn.net/4.0/video-js.css" rel="stylesheet">
@@ -18,7 +18,7 @@
 
         <div class="container body">
         </div>
-        <script data-main="js/main.js" src="js/lib/require.js"></script>
+        <script data-main="js/main.js" src="js/lib/bower_components/requirejs/require.js"></script>
         <script src="http://vjs.zencdn.net/4.0/video.js"></script>
     </body>
 </html>

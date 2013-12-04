@@ -1,25 +1,27 @@
 requirejs.config({
     paths: {
         config: "config",
-        jquery: "lib/jquery/jquery",
-        underscore: "lib/underscore-amd/underscore",
-        backbone: "lib/backbone-amd/backbone",
-        json2: "lib/json2/json2",
-        bootstrap: "lib/bootstrap",
-        templates: "../templates",
+        jquery: "lib/bower_components/jquery/jquery.min",
+        underscore: "lib/bower_components/underscore/underscore-min",
+        backbone: "lib/backbone-amd/backbone-min",
+        json2: "lib/bower_components/json2/json2",
+        bootstrap: "lib/bower_components/bootstrap/dist/js/bootstrap.min",
         serializeForm: "lib/serializeForm",
         backboneForms: "lib/backbone-forms.min",
-        leaflet: "lib/leaflet/dist/leaflet",
-        jqcookie: "lib/jquery-cookie/jquery.cookie",
+        leaflet: "lib/bower_components/leaflet/dist/leaflet",
+        jqcookie: "lib/bower_components/jquery-cookie/jquery.cookie",
         heatmap: "lib/heatmapjs/heatmap",
         heatmapL: "lib/heatmapjs/heatmap-leaflet",
         QuadTree: "lib/heatmapjs/QuadTree",
-        pouchdb: "lib/pouchdb/dist/pouchdb-nightly",
+        pouchdb: "lib/pouchdb/dist/pouchdb-nightly.min",
         CouchRest: "lib/CouchRest/CouchRest",
         IDBTilesLayer: "lib/IDBTilesLayer/L.TileLayer.IDBTiles",
         ReliefMap: "lib/ReliefMap/ReliefMap"
     },
     shim: {
+        underscore: {
+            exports: '_'
+        },
         bootstrap: {
             deps: ['jquery']
         },
