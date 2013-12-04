@@ -87,8 +87,6 @@ define([
         }),
         area: null,
         render: function () {
-            this.startLoading();
-
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
 
@@ -96,6 +94,7 @@ define([
 
             // Load the map template
             this.$el.html(this.template());
+            this.startLoading();
 
             // Load the filters
             var filtersTemplate = _.template(FiltersTemplate);
