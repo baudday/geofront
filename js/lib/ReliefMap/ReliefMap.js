@@ -15,7 +15,7 @@ ReliefMap.prototype.getTileLayer = function(callback) {
 
     // offline & no area
     if(!this.area && this.offline) {
-        // callback(false);
+        callback();
         return;
     }
 
