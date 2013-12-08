@@ -173,7 +173,7 @@ define([
                     });
 
                     // Sync data back to server, omit inst_users db
-                    that.couchRest.syncToRemote(['inst_users']);
+                    that.couchRest.syncToRemote(['inst_users', 'tiles']);
                 }
 
                 that.rmap.update({offline: offline});

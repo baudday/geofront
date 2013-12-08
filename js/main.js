@@ -89,3 +89,4 @@ function (App, config) {
 
     App.initialize();
 });
+
