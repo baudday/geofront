@@ -1,0 +1,6 @@
+[submodule "js/lib/CouchRest"]
+	path = js/lib/CouchRest
+	url = git@github.com:baudday/Couchrest.git
+[submodule "js/lib/pouchdb"]
+	path = js/lib/pouchdb
+	url = git@github.com:daleharvey/pouchdb.git
