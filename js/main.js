@@ -43,12 +43,6 @@ requirejs.config({
         config: {
             exports: 'config'
         },
-        CouchRest: {
-            deps: ['pouchdb'],
-        },
-        ReliefMap: {
-            deps: ['leaflet']
-        },
         backboneForms: {
             deps: ['jquery', 'underscore', 'backbone']
         },
