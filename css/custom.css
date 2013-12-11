@@ -421,6 +421,9 @@ form .btn-primary {
     padding: 0px 0px 0px;
     line-height: 1;
   }
+  .nav-collapse {
+    -webkit-transform: none;
+  }
   #about {
     height: auto;
   }
