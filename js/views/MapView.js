@@ -555,7 +555,6 @@ define([
             map.setView([coordinates.lat, coordinates.lon], coordinates.zoom);
             this.rmap.getTileLayer(function(lyr) {
                 lyr.addTo(map);
-                that.stopLoading();
             });
             
             this.mapLocations();
@@ -849,6 +848,7 @@ define([
                     that.heatmapLayer.setData(heatData);
                     that.heatmapLayer.addTo(map);
                 }
+                that.stopLoading();
             });
         },
         getAreas: function (callback) {
