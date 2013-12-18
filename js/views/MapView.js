@@ -172,7 +172,7 @@ define([
                         }
                     });
 
-                    // Sync data back to server, omit inst_users db
+                    // Sync data back to server, omit inst_users and tiles db's
                     that.couchRest.syncToRemote(['inst_users', 'tiles']);
                 }
 
