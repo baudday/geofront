@@ -351,12 +351,13 @@ form .btn-primary {
 #status {
   width: 10px;
   height: 10px;
+  display: block;
   float: left;
   position: absolute;
   top: 50%;
   margin-top: -5px;
   border-radius: 5px;
-  background: #ff0000;
+  background: #cccccc;
 }
 /* ==================== Responsive Stuff ==================== */
 @media (max-width: 979px) {
