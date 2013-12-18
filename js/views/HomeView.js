@@ -48,7 +48,7 @@ define([
             //         .bindPopup('Welcome to GeoRelief!').openPopup();
         },
         onLocationError: function(e) {
-            alert(e.message);
+            console.log(e.message);
         }
     });
 
