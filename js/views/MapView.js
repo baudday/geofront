@@ -128,7 +128,7 @@ define([
             map.on('locationfound', onLocationFound);
 
             function onLocationError(e) {
-                console.log(e.message);
+                $("#location-error").modal("show");
             }
 
             map.on('locationerror', onLocationError);
