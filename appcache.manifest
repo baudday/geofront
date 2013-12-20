@@ -8,7 +8,7 @@ index.php
 
 ./css/bootstrap.min.css
 ./css/bootstrap-responsive.min.css
-./css/custom.css
+./css/custom.css?date=2013-12-20
 
 ./css/images/bg.png
 ./css/images/layers.png
@@ -20,7 +20,7 @@ index.php
 
 ./js/lib/bower_components/leaflet/dist/leaflet.css
 ./js/lib/bower_components/leaflet/dist/leaflet.ie.css
-./js/main.js
+./js/main.js?date=2013-12-20
 ./js/lib/bower_components/requirejs/require.js
 
 ./img/add.png
@@ -40,3 +40,4 @@ index.php
 ./img/pin_shadow.png
 ./img/poster.png
 ./img/search.png
+
