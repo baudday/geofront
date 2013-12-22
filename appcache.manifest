@@ -1,5 +1,7 @@
 CACHE MANIFEST
 
+# Date: 2013-12-22
+
 NETWORK:
 *
 
@@ -8,7 +10,7 @@ index.php
 
 ./css/bootstrap.min.css
 ./css/bootstrap-responsive.min.css
-./css/custom.css?date=2013-12-20
+./css/custom.css
 
 ./css/images/bg.png
 ./css/images/layers.png
@@ -20,7 +22,7 @@ index.php
 
 ./js/lib/bower_components/leaflet/dist/leaflet.css
 ./js/lib/bower_components/leaflet/dist/leaflet.ie.css
-./js/main.js?date=2013-12-20
+./js/main.js
 ./js/lib/bower_components/requirejs/require.js
 
 ./img/add.png
