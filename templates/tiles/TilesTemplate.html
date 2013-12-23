@@ -1,8 +1,14 @@
 <h1>Map Tile Packages</h1>
-<p>These packages are required in order to use the map while offline.</p>
+<ul>
+    <li>These packages are required in order to use the map while offline.</li>
+    <li>Please make sure you have a fast connection before attempting to
+        download tile packages.</li>
+    <li>Make sure you have navigated to the relief area before going offline
+        in order to download location and log data.</li>
+</ul>
 
 <div class="package">
-    <h2><a href="#" id="Tacloban" class="package-link">Tacloban</a></h2>
+    <h2><a href="#" id="Tacloban" class="package-link">Tacloban (2031 tiles)</a></h2>
     <div class="tile-map" id="tacloban-map"></div>
 </div>
 
@@ -15,7 +21,8 @@
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <strong>Warning!</strong>
-                    This will delete all other downloaded tiles
+                    This will delete <strong>any</strong> previously downloaded
+                    tiles.
                 </div>
                 <p>Would you like to download this package?</p>
             </div>
@@ -30,12 +37,19 @@
 <div class="modal fade" id="loading">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Downloading</h4>
+            </div>
             <div class="modal-body loading">
                 <p>
-                    <img src="./img/loader.gif" /> downloading...<br />
-                    <small id="info"></small><br />
+                    <img src="./img/loader.gif" /> <span id="info">initializing...</span><br />
                     <small class="muted">
+                        Please keep this window open while download is in
+                        progress.<br />
                         This dialog will disappear upon completion.
+                    </small><br />
+                    <small class="muted">
+                        Download may take up to 20 minutes.
                     </small>
                 </p>
             </div>

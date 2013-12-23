@@ -74,7 +74,7 @@ define([
                     },
                     onChange: function(info) {
                         var status = info.docs_written !== 0 ?
-                            info.docs_written + " tiles downloaded..." :
+                            info.docs_written + " or more tiles downloaded..." :
                             "Initializing...";
                         $("#info").html(status);
                     }
