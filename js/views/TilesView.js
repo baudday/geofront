@@ -60,28 +60,31 @@ define([
 
             this.startLoading();
 
-            // Set the replication params
-            var opts = {
-                filter: function (doc) {
-                    if(doc.area) return doc.area === window.area;
-                    return false;
-                },
-                complete: function() {
-                    window.area = oldArea;
-                    that.stopLoading();
-                },
-                onChange: function(info) {
-                    var status = info.docs_written !== 0 ?
-                        info.docs_written + " tiles downloaded..." :
-                        "Initializing...";
-                    $("#info").html(status);
-                }
-            };
+            // Clear tiles db
+            this.couchRest.destroy('tiles', function(err, info) {
+                // Set the replication params
+                var opts = {
+                    filter: function (doc) {
+                        if(doc.area) return doc.area === window.area;
+                        return false;
+                    },
+                    complete: function() {
+                        window.area = oldArea;
+                        that.stopLoading();
+                    },
+                    onChange: function(info) {
+                        var status = info.docs_written !== 0 ?
+                            info.docs_written + " tiles downloaded..." :
+                            "Initializing...";
+                        $("#info").html(status);
+                    }
+                };
 
-            // Get the tiles
-            this.couchRest.replicateFrom('tiles', opts);
+                // Get the tiles
+                that.couchRest.replicateFrom('tiles', opts);
 
-            return false;
+                return false;
+            });
         },
         startLoading: function () {
             $("#loading").modal({
