@@ -7,5 +7,6 @@
             name: "main"
         }
     ],
-    mainConfigFile: "../js/main.js"
+    mainConfigFile: "../js/main.js",
+    skipDirOptimize: true
 })
