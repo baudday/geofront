@@ -28,7 +28,7 @@ sed -i "s/in-dev/$COMMIT/g" templates/header.html
 r.js -o build/app.build.js
 
 cd dist
-tar -cvzf $FILE appcache.manifest index.php css/* js/main.js img/ js/lib/bower_components/leaflet/dist/leaflet.css js/lib/bower_components/leaflet/dist/leaflet.ie.css
+tar -cvzf $FILE appcache.manifest index.php css/* js/main.js img/ js/lib/bower_components/leaflet/dist/leaflet.css js/lib/bower_components/leaflet/dist/leaflet.ie.css js/lib/bower_components/requirejs/require.js
 scp -r $FILE ubuntu@$HOST:/home/ubuntu/ && rm $FILE &&
 ssh ubuntu@$HOST "cd /var/www/releases && sudo mkdir $COMMIT && sudo tar -xf /home/ubuntu/$FILE -C $COMMIT && rm /home/ubuntu/$FILE && cd /var/www && sudo rm /var/www/$ENV && sudo ln -s /var/www/releases/$COMMIT /var/www/$ENV"
 
