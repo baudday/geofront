@@ -9,7 +9,13 @@ git checkout $BRANCH
 
 export COMMIT=$(git rev-parse --short HEAD)
 export FILE=$COMMIT.tar.gz
-export HOST=georeliefs.com
+
+if [ "$ENV" = "test" ]; then
+  export HOST=test.georeliefs.com
+else
+  export HOST=georeliefs.com
+fi
+
 export DATE=$(date)
 
 # Update appcache.manifest
