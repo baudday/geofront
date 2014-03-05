@@ -1,9 +1,6 @@
-define("ReliefMap", ["CouchRest", "leaflet"], function(CouchRest, L) {
+define("ReliefMap", ["TileDownloader", "leaflet"], function(TileDownloader, L) {
     function ReliefMap() {
-        this.couchRest = new CouchRest({
-            couchUrl: config.couchUrl,
-            apiUrl: config.baseApiUrl
-        });
+        this.downloader = new TileDownloader(config);
     };
 
     ReliefMap.prototype.update = function(opts) {
@@ -30,28 +27,15 @@ define("ReliefMap", ["CouchRest", "leaflet"], function(CouchRest, L) {
         }
 
         // offline w/ area
-        var opts = {local: true, key: this.area};
-        var query = {
-            fun: {
-                map: function (doc) {
-                    emit(doc.area, doc);
-                }
-            },
-            opts: opts
-        };
-
-        this.couchRest.query('tiles', query, function(err, res) {
-            if(err) {
-                console.log(err);
-                return;
-            }
-
-            var lyr = new L.TileLayer.IDBTiles('', {
-                minZoom: 13,
-                maxZoom: 17,
-                tms: true
-            }, res.rows);
-            callback(lyr);
+        this.downloader.open(function() {
+            _this.downloader.get(this.area, function(tiles) {
+                var lyr = new L.TileLayer.IDBTiles('', {
+                    minZoom: 13,
+                    maxZoom: 17,
+                    tms: true
+                }, tiles);
+                callback(lyr);
+            });
         });
     };
 

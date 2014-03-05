@@ -16,7 +16,8 @@ requirejs.config({
         pouchdb: "lib/pouchdb/dist/pouchdb-nightly.min",
         CouchRest: "lib/CouchRest/CouchRest",
         IDBTilesLayer: "lib/IDBTilesLayer/L.TileLayer.IDBTiles",
-        ReliefMap: "lib/ReliefMap/ReliefMap"
+        ReliefMap: "lib/ReliefMap/ReliefMap",
+        TileDownloader: "lib/TileDownloader/TileDownloader"
     },
     shim: {
         underscore: {

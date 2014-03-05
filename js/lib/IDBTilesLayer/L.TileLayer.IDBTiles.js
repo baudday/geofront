@@ -32,13 +32,13 @@ define([], function() {
             var x = tilePoint.x;
             var y = tilePoint.y;
 
-            var result = this.tiles.filter(function(row) {
-                return (row.value.tile_column === x
-                        && row.value.tile_row === y
-                        && row.value.zoom_level === z);
+            var result = this.tiles.filter(function(tile) {
+                return (tile.tile_column === x
+                        && tile.tile_row === y
+                        && tile.zoom_level === z);
             });
 
-            if(result[0]) return result[0].value.tile_data;
+            if(result[0]) return result[0].tile_data;
             else return;
         }
     });

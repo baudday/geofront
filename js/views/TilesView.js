@@ -4,9 +4,10 @@ define([
     "underscore",
     "backbone",
     "CouchRest",
+    "TileDownloader",
     "text!../../templates/tiles/TilesTemplate.html",
     "text!../../templates/static/OfflineTemplate.html"
-], function(config, $, _, Backbone, CouchRest, TilesTemplate, OfflineTemplate) {
+], function(config, $, _, Backbone, CouchRest, TileDownloader, TilesTemplate, OfflineTemplate) {
     var TilesView = Backbone.View.extend({
         el: '.body',
         couchRest: new CouchRest({
@@ -68,36 +69,37 @@ define([
         download: function() {
             var that = this;
             if(!this.area) return false;
-            if(window.area) var oldArea = window.area;
-            window.area = this.area;
 
-            this.startLoading();
-
-            // Clear tiles db
-            this.couchRest.destroy('tiles', function(err, info) {
-                // Set the replication params
-                var opts = {
-                    filter: function (doc) {
-                        if(doc.area) return doc.area === window.area;
-                        return false;
-                    },
-                    complete: function() {
-                        window.area = oldArea;
-                        that.stopLoading();
-                    },
-                    onChange: function(info) {
-                        var status = info.docs_written !== 0 ?
-                            info.docs_written + " or more tiles downloaded..." :
-                            "initializing...";
-                        $("#info").html(status);
-                    }
-                };
-
-                // Get the tiles
-                that.couchRest.replicateFrom('tiles', opts);
-
+            try {
+                var downloader = new TileDownloader(config);
+            } catch (e) {
+                this.idbError(e.message);
                 return false;
+            }
+
+            downloader.open(function() {
+                var count = 0;
+                that.startLoading();
+                downloader.clear(); // Clear the db before
+
+                $("#loading").on("shown.bs.modal", function() {
+                    for (var i=10; i<19; i++) {
+                        downloader.downloadTiles(that.area, i, function(error, tiles) {
+                            if(error) {
+                                that.idbError(error);
+                                return;
+                            }
+                            // Count tiles and output
+                            count += tiles.length;
+                            $("#info").html(count + " tiles downloaded");
+                        });
+                    }
+
+                    that.stopLoading();
+                });
             });
+
+            return false;
         },
         startLoading: function () {
             $("#loading").modal({
@@ -107,6 +109,15 @@ define([
         },
         stopLoading: function () {
             $("#loading").modal('hide');
+            $("#download-complete").modal({
+                backdrop: 'static'
+            });
+        },
+        idbError: function(str) {
+            $(".message").html(str);
+            $("#idb-error").modal({
+                backdrop: 'static'
+            });
         }
     });
 
