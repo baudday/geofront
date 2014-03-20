@@ -47,6 +47,10 @@ define([
 
             // Build the event log
             this.getLogs(function(err, logs) {
+                logs.rows.sort(function(a, b) {
+                    return new Date(b.value.date) - new Date(a.value.date);
+                });
+
                 var log = _.template(EventLogTemplate, logs);
                 $("#eventstable").html(log);
             });

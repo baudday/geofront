@@ -76,6 +76,10 @@ define([
 
             // Build the service log
             this.getServices(function(err, services) {
+                services.rows.sort(function(a, b) {
+                    return new Date(b.value.date) - new Date(a.value.date);
+                });
+
                 var data = {
                     services: services,
                     userCreds: userCreds
