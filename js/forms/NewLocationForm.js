@@ -27,14 +27,6 @@ define([
                     'required'
                 ] 
             },
-            area: {
-                type: 'Select',
-                title: 'Relief Area',
-                options: [],
-                validators: [
-                    'required'
-                ]
-            },
             amenity: {
                 type: 'Select',
                 title: 'Location Type',

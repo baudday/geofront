@@ -11,7 +11,8 @@ define([
     "text!../../templates/forms/AreaFilterFormTemplate.html", "forms/NewAreaForm",
     "text!../../templates/forms/AddAreaTemplate.html", "models/AreaModel",
     "text!../../templates/forms/SearchLocationsTemplate.html",
-    "forms/SearchLocationsForm", "ReliefMap", "IDBTilesLayer"
+    "forms/SearchLocationsForm", "ReliefMap", "IDBTilesLayer",
+    "text!../../templates/static/error.html"
 ], function (config, $, _, Backbone, Bootstrap, L, heatmap, heatmapL,
             CouchRest, MapTemplate,
             LocationsCollection, LocationModel, AddLocationTemplate,
@@ -19,7 +20,7 @@ define([
             LogsTemplate, FiltersTemplate, AreasTemplate, AreaFilterForm,
             AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
             SearchLocationsTemplate, SearchLocationsForm, ReliefMap,
-            IDBTilesLayer){
+            IDBTilesLayer, Error){
 
     var that;
 
@@ -439,7 +440,7 @@ define([
                             amenity: tmp.amenity,
                             population: tmp.population,
                             notes: tmp.notes,
-                            area: tmp.area,
+                            area: this.area,
                             serviceCount: 0,
                             eventCount: 0
                         },
@@ -544,6 +545,11 @@ define([
                 coordinates = JSON.parse(unescape($target.val()));
 
             window.area = this.area = $target.text();
+
+            // render the add location form since we're in an area now
+            this.renderAddLocationForm(this.userLocation.lat, this.userLocation.lng, function() {
+                $("#info").html("<p><i class='icon-globe'></i> Using your current Location.</p>");
+            });
 
             // Remove all the locations
             if(this.locationsLayer) {
@@ -746,46 +752,41 @@ define([
             });
         },
         renderAddLocationForm: function (lat, lon, callback) {
-            this.getAreas(function (areas) {
-                // Load the form
-                form = new NewLocationForm({
-                    template: _.template(AddLocationTemplate),
-                    model: new LocationModel()
-                }).render();
+            if(!this.area) {
+                var error = _.template(Error, {error: "Please navigate to a relief area first."});
+                $("#main").html(error);
+                if(callback) callback();
+                return false;
+            }
 
-                var options = [];
+            // Load the form
+            form = new NewLocationForm({
+                template: _.template(AddLocationTemplate),
+                model: new LocationModel()
+            }).render();
 
-                $.each(areas, function (index, value) {
-                    options[index] = {
-                        val: value.doc._id,
-                        label: value.doc._id
-                    };
-                });
+            // Render the form
+            $("#main").html(form.el);
 
-                form.fields.area.editor.setOptions(options);
+            // Set the fields
+            $("[name='lat']").val(lat);
+            $("[name='lon']").val(lon);
+            $("#area").html(this.area);
 
-                // Render the form
-                $("#main").html(form.el);
-                
-                // Set the fields
-                $("[name='lat']").val(lat);
-                $("[name='lon']").val(lon);
-
-                // Validate the form on change
-                form.on('change', function (form) {
-                    $(".control-group").removeClass("error").addClass("success");
-                    $("input").closest(".control-group").find(".text-error").html("");
-                    var errors = form.commit();
-                    if(errors) {
-                        $.each(errors, function (key, value) {
-                            $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
-                            $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
-                        });
-                    }
-                });
-
-                callback();
+            // Validate the form on change
+            form.on('change', function (form) {
+                $(".control-group").removeClass("error").addClass("success");
+                $("input").closest(".control-group").find(".text-error").html("");
+                var errors = form.commit();
+                if(errors) {
+                    $.each(errors, function (key, value) {
+                        $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
+                        $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
+                    });
+                }
             });
+
+            if(callback) callback();
         },
         mapLocations: function (filter) {
             if(!window.area) return;
