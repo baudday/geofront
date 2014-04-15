@@ -547,7 +547,13 @@ define([
             window.area = this.area = $target.text();
 
             // render the add location form since we're in an area now
-            this.renderAddLocationForm(this.userLocation.lat, this.userLocation.lng, function() {
+            if(this.userLocation) {
+                var lat = this.userLocation.lat;
+                var lng = this.userLocation.lng;
+            } else {
+                var lat = lng = '';
+            }
+            this.renderAddLocationForm(lat, lng, function() {
                 $("#info").html("<p><i class='icon-globe'></i> Using your current Location.</p>");
             });
 
