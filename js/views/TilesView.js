@@ -14,6 +14,7 @@ define([
             couchUrl: config.couchUrl,
             apiUrl: config.baseApiUrl
         }),
+        maps: [],
         render: function() {
             var that = this;
 
@@ -23,32 +24,39 @@ define([
                     that.$el.html(offlineTemplate);
                 } else {
                     that.$el.html(_.template(TilesTemplate));
-                    taclobanMap = L.map('tacloban-map', {
+                    that.maps.push(L.map('tacloban-map', {
                         dragging: false,
                         zoomControl: false,
                         touchZoom: false,
                         scrollWheelZoom: false,
                         doubleClickZoom: false,
                         boxZoom: false
-                    }).setView([11.24525080471127, 125.00235557556154], 13);
+                    }).setView([11.24525080471127, 125.00235557556154], 13));
 
-                    massMap = L.map('mass-map', {
+                    that.maps.push(L.map('mass-map', {
                         dragging: false,
                         zoomControl: false,
                         touchZoom: false,
                         scrollWheelZoom: false,
                         doubleClickZoom: false,
                         boxZoom: false
-                    }).setView([42.338244963350846, -71.94259643554688], 11);
+                    }).setView([42.338244963350846, -71.94259643554688], 11));
 
-                    // add an OpenStreetMap tile layer
-                    L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(taclobanMap);
+                    that.maps.push(L.map('minneapolis-map', {
+                        dragging: false,
+                        zoomControl: false,
+                        touchZoom: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false,
+                        boxZoom: false
+                    }).setView([44.9833, -93.2667], 11));
 
-                    L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(massMap);
+                    for (var i = 0; i < that.maps.length; i++) {
+                        // add an OpenStreetMap tile layers
+                        L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(that.maps[i]);
+                    }
 
                     // DEBUG
                     // map.on('drag', function() {
