@@ -11,7 +11,7 @@ define("TileDownloader", [], function() {
         window.IDBKeyRange = window.IDBKeyRange ||
             window.webkitIDBKeyRange || window.msIDBKeyRange;
 
-        if (!window.indexedDB) throw new Error("Your browser does not support IndexedDB. Unfortunately you will not be able to download tile packs.");
+        if (!window.indexedDB) return false;
 
         this.db = null;
     };

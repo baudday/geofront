@@ -78,12 +78,9 @@ define([
             var that = this;
             if(!this.area) return false;
 
-            try {
-                var downloader = new TileDownloader(config);
-            } catch (e) {
-                this.idbError(e.message);
-                return false;
-            }
+            var downloader = new TileDownloader(config);
+            if(!downloader) this.idbError("Your browser does not support IndexedDB. Unfortunately you will not be able to download tile packs.");
+            return false;
 
             downloader.open(function() {
                 var count = 0;
