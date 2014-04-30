@@ -1,0 +1,97 @@
+<h1>Map Tile Packages</h1>
+<ul>
+    <li>These packages are required in order to use the map while offline.</li>
+    <li>Please make sure you have a fast connection before attempting to
+        download tile packages.</li>
+    <li>Make sure you have navigated to the relief area before going offline
+        in order to download location and log data.</li>
+</ul>
+
+<div class="package">
+    <h2><a href="#" id="Massachusetts - Abraham's relief services" class="package-link">Massachusetts - Abraham's relief services (1678 tiles)</a></h2>
+    <div class="tile-map" id="mass-map"></div>
+</div>
+
+<div class="package">
+    <h2><a href="#" id="Minneapolis" class="package-link">Minneapolis (1099 tiles)</a></h2>
+    <div class="tile-map" id="minneapolis-map"></div>
+</div>
+
+<div class="package">
+    <h2><a href="#" id="Tacloban" class="package-link">Tacloban (1016 tiles)</a></h2>
+    <div class="tile-map" id="tacloban-map"></div>
+</div>
+
+<div class="modal fade" id="confirm-download">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Download Package</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <strong>Warning!</strong>
+                    This will delete <strong>any</strong> previously downloaded
+                    tiles.
+                </div>
+                <p>Would you like to download this package?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary download" data-dismiss="modal">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loading">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Downloading</h4>
+            </div>
+            <div class="modal-body loading">
+                <p>
+                    <img src="./img/loader.gif" /> <span id="info">initializing...</span><br />
+                    <small class="muted">
+                        Please keep this window open while download is in
+                        progress.<br />
+                        This dialog will disappear upon completion.
+                    </small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="idb-error">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Oh no! :(</h4>
+            </div>
+            <div class="modal-body">
+                <p class="message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="download-complete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Success!</h4>
+            </div>
+            <div class="modal-body">
+                <p>Your download was successful!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>

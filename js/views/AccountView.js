@@ -1,10 +1,10 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'text!templates/account/AccountTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "text!../../templates/account/AccountTemplate.html"
 ], function($, _, Backbone, serializeForm, backboneForms, AccountTemplate){
 
     var AccountView = Backbone.View.extend({

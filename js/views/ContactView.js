@@ -1,10 +1,10 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'forms/ContactForm',
-    'text!templates/forms/ContactFormTemplate.html',
-    'models/ContactModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "forms/ContactForm",
+    "text!../../templates/forms/ContactFormTemplate.html",
+    "models/ContactModel"
 ], function($, _, Backbone, ContactForm, ContactFormTemplate, ContactModel){
     var that = this;
     var ContactView = Backbone.View.extend({

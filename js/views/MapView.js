@@ -1,35 +1,26 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'leaflet',
-    'heatmap',
-    'heatmapL',
-    'text!templates/map/MapTemplate.html',
-    'models/LoginModel',
-    'collections/LocationsCollection',
-    'models/LocationModel',
-    'text!templates/forms/AddLocationTemplate.html',
-    'forms/NewLocationForm',
-    'views/EventLogView',
-    'views/ServiceLogView',
-    'collections/AreasCollection',
-    'text!templates/logs/LogsTemplate.html',
-    'text!templates/map/FiltersTemplate.html',
-    'text!templates/map/AreasTemplate.html',
-    'forms/AreaFilterForm',
-    'text!templates/forms/AreaFilterFormTemplate.html',
-    'forms/NewAreaForm',
-    'text!templates/forms/AddAreaTemplate.html',
-    'models/AreaModel',
-    'text!templates/forms/SearchLocationsTemplate.html',
-    'forms/SearchLocationsForm'
-], function($, _, Backbone, Bootstrap, L, heatmapL, heatmap, MapTemplate, LoginModel, 
-            LocationsCollection, LocationModel, AddLocationTemplate, NewLocationForm, EventLogView, 
-            ServiceLogView, AreasCollection, LogsTemplate, FiltersTemplate, AreasTemplate, 
-            AreaFilterForm, AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
-            SearchLocationsTemplate, SearchLocationsForm){
+    "config",  "jquery",   "underscore",    "backbone", "bootstrap", "leaflet",
+    "heatmap", "heatmapL", "CouchRest",
+    "text!../../templates/map/MapTemplate.html",
+    "collections/LocationsCollection",      "models/LocationModel",
+    "text!../../templates/forms/AddLocationTemplate.html",    "forms/NewLocationForm",
+    "views/EventLogView", "views/ServiceLogView", "collections/AreasCollection",
+    "text!../../templates/logs/LogsTemplate.html",
+    "text!../../templates/map/FiltersTemplate.html",
+    "text!../../templates/map/AreasTemplate.html", "forms/AreaFilterForm",
+    "text!../../templates/forms/AreaFilterFormTemplate.html", "forms/NewAreaForm",
+    "text!../../templates/forms/AddAreaTemplate.html", "models/AreaModel",
+    "text!../../templates/forms/SearchLocationsTemplate.html",
+    "forms/SearchLocationsForm", "ReliefMap", "IDBTilesLayer",
+    "text!../../templates/static/error.html"
+], function (config, $, _, Backbone, Bootstrap, L, heatmap, heatmapL,
+            CouchRest, MapTemplate,
+            LocationsCollection, LocationModel, AddLocationTemplate,
+            NewLocationForm, EventLogView, ServiceLogView, AreasCollection,
+            LogsTemplate, FiltersTemplate, AreasTemplate, AreaFilterForm,
+            AreaFilterFormTemplate, NewAreaForm, AddAreaTemplate, AreaModel,
+            SearchLocationsTemplate, SearchLocationsForm, ReliefMap,
+            IDBTilesLayer, Error){
 
     var that;
 
@@ -78,7 +69,25 @@ define([
         newLocation: new LocationModel(),
         locations: new Array(),
         paneVisible: false,
-        render: function() {
+        couchRest: new CouchRest({
+            couchUrl: config.couchUrl,
+            apiUrl: config.baseApiUrl
+        }),
+        rmap: new ReliefMap(),
+        locationsLayer: L.layerGroup(),
+        heatmapLayer: L.TileLayer.heatMap({
+            radius: {value: 20, absolute: false},
+            opacity: 0.8,
+            gradient: {
+                0.45: "rgb(59, 151, 211)", // also lt blue
+                0.55: "rgb(59, 151, 211)", // lt blue
+                0.65: "rgb(1, 149, 71)", // green
+                0.95: "rgb(240, 196, 25)", // yellow
+                1.00: "rgb(231,76,61)" // red
+            }
+        }),
+        area: null,
+        render: function () {
             // Get the user's credentials
             userCreds = JSON.parse($.cookie('UserInfo'));
 
@@ -86,6 +95,7 @@ define([
 
             // Load the map template
             this.$el.html(this.template());
+            this.startLoading();
 
             // Load the filters
             var filtersTemplate = _.template(FiltersTemplate);
@@ -97,19 +107,10 @@ define([
 
             // Create the map
             map = L.map('map', {
-                dragging: true
+                dragging: true,
+                minZoom: 13,
+                maxZoom: 17
             });
-
-            // Add layer to map
-            L.tileLayer('//a.tiles.mapbox.com/v3/baudday.map-jos24le8/{z}/{x}/{y}.png').addTo(map);
-
-            // Find the user's location before mapping locations. 
-            // Locations are more important and need to be on top.
-            map.locate({setView: true, maxZoom: 15});
-
-            // Map the locations
-            var url = "/locations";
-            this.mapLocations(url);
 
             function onLocationFound(e) {
                 // Set the latlng to be used for other stuff!
@@ -128,7 +129,7 @@ define([
             map.on('locationfound', onLocationFound);
 
             function onLocationError(e) {
-                alert(e.message);
+                $("#location-error").modal("show");
             }
 
             map.on('locationerror', onLocationError);
@@ -156,7 +157,36 @@ define([
 
             map.on('click', onMapClick);
 
+            this.couchRest.status(function (offline) {
+                window.offline = offline;
 
+                if(!offline) {
+                    // Update the institution's user list
+                    $.ajax({
+                        url: config.baseApiUrl +
+                            '/users/institution/' + userCreds.institution,
+                        success: function(res) {
+                            that.couchRest.bulkSave('inst_users', {docs: res});
+                        },
+                        error: function(res) {
+                            window.offline = that.couchRest.offline = true;
+                        }
+                    });
+
+                    // Sync data back to server, omit inst_users and tiles db's
+                    that.couchRest.syncToRemote(['inst_users', 'tiles']);
+                }
+
+                that.rmap.update({offline: offline});
+                that.rmap.getTileLayer(function(lyr) {
+                    if(lyr) {
+                        lyr.addTo(map);
+                        map.locate({setView: true});
+                    }
+
+                    that.stopLoading();
+                });
+            });
         },
         events: {
             'submit #addlocation': 'addLocation',
@@ -166,7 +196,7 @@ define([
             'click #areanavbtn': 'toggleAreaNavPane',
             'click #listlocbtn': 'toggleLocationList',
             'click #searchlocbtn': 'toggleSearchLocations',
-            'click .mapfilter': 'filterMap',
+            'click .mapfilter': 'filterLocations',
             'change #location-image': 'handleFileSelect',
             'click #usemylocation': 'useCurrentLocation',
             'click .close-pane': 'hidePane',
@@ -175,7 +205,7 @@ define([
             'click .location': 'goToLocation',
             'submit #searchlocations': 'returnFalse'
         },
-        showPane: function(height) {
+        showPane: function (height) {
             $("#main-pane-content").animate({
                 "height": height,
                 "padding": "0 20px",
@@ -186,7 +216,7 @@ define([
             }).css("overflow", "auto");
             $(".map-menu-btn").removeClass('close-pane');
         },
-        hidePane: function() {
+        hidePane: function () {
             $("#main-pane-content").animate({
                 "height": 0,
                 "padding": 0
@@ -196,7 +226,7 @@ define([
             }).css("overflow", "hidden");
             $(".map-menu-btn").removeClass('close-pane');
         },
-        toggleAddLocPane: function(ev) {
+        toggleAddLocPane: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -209,7 +239,7 @@ define([
             this.showPane(height);
             $(".mainbtn").addClass('close-pane');
         },
-        toggleLogPane: function(ev) {
+        toggleLogPane: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -223,7 +253,7 @@ define([
             this.showPane(height);
             $(".mainbtn").addClass('close-pane');
         },
-        toggleMapFiltersPane: function(ev) {
+        toggleMapFiltersPane: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -234,7 +264,7 @@ define([
             this.showPane("100%");
             $("#mapfiltersbtn").addClass('close-pane');
         },
-        toggleAreaNavPane: function(ev) {
+        toggleAreaNavPane: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -245,31 +275,25 @@ define([
             this.showPane("100%");
             $("#areanavbtn").addClass('close-pane');
 
-            // Create the areas collection
-            var areas = new AreasCollection();
+            this.getAreas(function (areas) {
+                // Load the form
+                that.areaFilterForm = new AreaFilterForm({
+                    template: _.template(AreaFilterFormTemplate)
+                }).render();
 
-            // Get the areas
-            areas.fetch({
-                success: function(areas) {
-                    // Load the form
-                    that.areaFilterForm = new AreaFilterForm({
-                        template: _.template(AreaFilterFormTemplate)
-                    }).render();
-
-                    var options = [];
-                    options.push({val: '',label: 'Select One'});
-                    $.each(areas.models, function(index, value) {
-                        options.push({
-                            val: escape(value.attributes.coordinates), 
-                            label: value.attributes._id
-                        });
+                var options = [];
+                options.push({val: '',label: 'Select One'});
+                $.each(areas, function (index, value) {
+                    options.push({
+                        val: escape(value.doc.coordinates), 
+                        label: value.doc._id
                     });
+                });
 
-                    that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
+                that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
 
-                    // Render the form
-                    $("#jumptoarea").html(that.areaFilterForm.el);
-                }
+                // Render the form
+                $("#jumptoarea").html(that.areaFilterForm.el);
             });
 
             // Load the area form
@@ -280,19 +304,19 @@ define([
 
             $("#area-form").html(this.newAreaForm.el);
 
-            this.newAreaForm.on('change', function(newAreaForm) {
+            this.newAreaForm.on('change', function (newAreaForm) {
                 $("#area-form .control-group").removeClass("error").addClass("success");
                 $("#area-form input").closest(".control-group").find(".text-error").html("");
                 var errors = newAreaForm.commit();
                 if(errors) {
-                    $.each(errors, function(key, value) {
+                    $.each(errors, function (key, value) {
                         $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
                         $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                     });
                 }
             });
         },
-        toggleLocationList: function(ev) {
+        toggleLocationList: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -315,7 +339,7 @@ define([
             var string = "<tr><th>Name</th><th>Type</th><th>Population</th><th>Relief Area</th><th>Notes</th></tr>";
 
             // Check if marker is in bounds
-            that.locationsLayer.eachLayer(function(marker) {
+            that.locationsLayer.eachLayer(function (marker) {
                 if (bounds.contains(marker.options.latlng)) {
                     string += "<tr class='location' id='" + marker.options._id + "'>";
 
@@ -344,7 +368,7 @@ define([
             });
             $("#locationslist").html(string);
         },
-        toggleSearchLocations: function(ev) {
+        toggleSearchLocations: function (ev) {
             // Hide everything else
             $(".content").hide();
 
@@ -365,12 +389,12 @@ define([
 
             $("#search-form").html(this.searchForm.el);
 
-            this.searchForm.on('change', function(searchForm) {
+            this.searchForm.on('change', function (searchForm) {
                 var query = $("#query").val();
 
                 var string = "<tr><th>Name</th><th>Type</th><th>Population</th><th>Relief Area</th><th>Notes</th></tr>";
 
-                $.each(that.markers, function(key, marker) {
+                $.each(that.markers, function (key, marker) {
                     if(marker.options.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
 
                         string += "<tr class='location' id='" + marker.options._id + "'>";
@@ -402,51 +426,79 @@ define([
                 $("#searchresults").html(string);
             });
         },
-        addLocation: function(ev) {
+        addLocation: function (ev) {
             var errors = form.commit();
             var that = this;
             
             if(!errors) {
-                this.newLocation = $(ev.currentTarget).serializeForm();
-                if(this.newLocationImage) {
-                    this.newLocation.image = this.newLocationImage;
-                }
-
-                var location = new LocationModel();
-                location.save(this.newLocation, {
-                    success: function(location) {
-                        $("#error").hide();
-                        $("#error").removeClass("alert-error").addClass("alert-success").html("Location successfully added!").show();
-                        $("input[type='text']").val("");
-                        $("textarea").val("");
-                        $("input").closest(".control-group").removeClass("success");
-                        $("textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-                        $("#main-pane-content").scrollTop(0);
-
-                        // Clear the image
-                        that.newLocationImage = null;
-
-                        // Remove all the locations
-                        map.removeLayer(that.locationsLayer);
-                        map.removeLayer(that.heatmapLayer);
-
-                        // Map the locations again
-                        var url = "/locations";
-                        that.mapLocations(url);
-                    },
-                    error: function(model, response) {
-                        $("#error").show().html(response.responseText);
+                var tmp = $(ev.currentTarget).serializeForm();
+                this.newLocation = {
+                    geoJSON: {
+                        type: "Feature",
+                        properties: {
+                            name: tmp.name,
+                            amenity: tmp.amenity,
+                            population: tmp.population,
+                            notes: tmp.notes,
+                            area: this.area,
+                            serviceCount: 0,
+                            eventCount: 0
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [tmp.lon, tmp.lat]
+                        },
+                        added: new Date()
                     }
+                };
+
+                if(this.newLocationImage)
+                    this.newLocation.geoJSON.properties.image = this.newLocationImage;
+
+                this.couchRest.save('locations', this.newLocation, function(err, res) {
+                    if(err) {
+                        $("#error").show().html(err.reason);
+                        return;
+                    }
+
+                    $("#error").hide();
+
+                    $("#error").removeClass("alert-error")
+                        .addClass("alert-success")
+                        .html("Location successfully added!").show();
+
+                    $("input[type='text']").val("");
+                    $("textarea").val("");
+
+                    $("input").closest(".control-group")
+                        .removeClass("success");
+
+                    $("textarea").closest(".control-group")
+                        .removeClass("success")
+                        .find(".text-error")
+                        .html("");
+
+                    $("#main-pane-content").scrollTop(0);
+
+                    // Clear the image
+                    that.newLocationImage = null;
+
+                    // Remove all the locations
+                    map.removeLayer(that.locationsLayer);
+                    map.removeLayer(that.heatmapLayer);
+
+                    // Map the locations again
+                    that.mapLocations();
                 });
             } else {
-                $.each(errors, function(key, value) {
+                $.each(errors, function (key, value) {
                     $("[name='" + key + "']").closest(".control-group").addClass("error");
                     $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                 });
             }
             return false;
         },
-        loadLogView: function(location) {
+        loadLogView: function (location) {
             // Load the logs template
             var logsTemplate = _.template(LogsTemplate);
             $("#main").html(logsTemplate);
@@ -471,41 +523,60 @@ define([
             // Show logs
             $("#main").show();
         },
-        filterMap: function(ev) {
+        filterLocations: function (ev) {
             // Reset the button and form
             $(".mainbtn").html("<img src='img/add.png' />").attr("id", "addlocbtn");
             this.hidePane();
             this.useCurrentLocation();
 
-            var filter = ev.currentTarget.id;
-
             // Remove all the locations
-            map.removeLayer(that.locationsLayer);
-            map.removeLayer(that.heatmapLayer);
-
-
-            if(filter == "all") {
-                var url = "/locations";
-            } else {
-                var url = "/locations/type/" + filter;
+            if(this.locationsLayer) {
+                map.removeLayer(this.locationsLayer);
+                map.removeLayer(this.heatmapLayer);
             }
 
-            // Map the locations
-            this.mapLocations(url);
+            var filter = ev.currentTarget.id;
+            (filter === 'all') ? this.mapLocations() : this.mapLocations(filter);
         },
-        goToArea: function(ev) {
-            var target = ev.target,
-                coordinates = JSON.parse(unescape($(target).val()));
-                
-            map.panTo(new L.LatLng(coordinates.lat, coordinates.lon));
-            map.setZoom(coordinates.zoom);
+        goToArea: function () {
+            this.startLoading();
+
+            var $target = $('#filterareaselect option:selected'),
+                coordinates = JSON.parse(unescape($target.val()));
+
+            window.area = this.area = $target.text();
+
+            // render the add location form since we're in an area now
+            if(this.userLocation) {
+                var lat = this.userLocation.lat;
+                var lng = this.userLocation.lng;
+            } else {
+                var lat = lng = '';
+            }
+            this.renderAddLocationForm(lat, lng, function() {
+                $("#info").html("<p><i class='icon-globe'></i> Using your current Location.</p>");
+            });
+
+            // Remove all the locations
+            if(this.locationsLayer) {
+                map.removeLayer(this.locationsLayer);
+                map.removeLayer(this.heatmapLayer);
+            }
+
+            this.rmap.update({area: this.area});
+            map.setView([coordinates.lat, coordinates.lon], coordinates.zoom);
+            this.rmap.getTileLayer(function(lyr) {
+                lyr.addTo(map);
+            });
             
-            
+            this.mapLocations();
+
+            if(!window.offline) this.replicateLogs();
 
             // Hide the pane
             this.hidePane();
         },
-        addArea: function(ev) {
+        addArea: function (ev) {
             var errors = this.newAreaForm.commit();
             
             if(!errors) {
@@ -516,83 +587,82 @@ define([
                 var mapZoom = map.getZoom();
 
                 // Get the form info
-                var newArea = $(ev.currentTarget).serializeForm();
+                var formData = $(ev.currentTarget).serializeForm();
 
-                // Add the coordinates to the object. Have to do our own bit of parsing here
-                newArea.coordinates = "{\"lat\":" + mapCenter.lat + ", \"lon\":" + mapCenter.lng + ", \"zoom\":" + mapZoom + "}";
-
-                var area = new AreaModel();
+                var area = {
+                    _id: formData.areaname,
+                    coordinates: "{\"lat\":" + mapCenter.lat + ", \"lon\":" + mapCenter.lng + ", \"zoom\":" + mapZoom + "}",
+                    date: new Date()
+                };
 
                 // Save that ish
-                area.save(newArea, {
-                    success: function(institution) {
-                        // Reset the form
-                        $("#area-error").hide();
-                        $("#area-error").removeClass("alert-error").addClass("alert-success").html("Area successfully added!").show();
-                        $("#area-form input[type='text']").val("");
-                        $("#area-form input").closest(".control-group").removeClass("success");
-                        $("#area-form textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
-
-                        // Create the areas collection
-                        var areas = new AreasCollection();
-
-                        // Get the areas
-                        areas.fetch({
-                            success: function(areas) {
-                                // Load the form
-                                that.areaFilterForm = new AreaFilterForm({
-                                    template: _.template(AreaFilterFormTemplate)
-                                }).render();
-
-                                var options = [];
-                                options.push({val: '',label: 'Select One'});
-                                $.each(areas.models, function(index, value) {
-                                    options.push({
-                                        val: escape(value.attributes.coordinates), 
-                                        label: value.attributes._id
-                                    });
-                                });
-
-                                that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
-
-                                // Render the form
-                                $("#jumptoarea").html(that.areaFilterForm.el);
-                            }
-                        });
-                    },
-                    error: function(model, response) {
+                this.couchRest.save('areas', area, function (err, res) {
+                    if(err) {
                         $("#area-error").removeClass("alert-success").addClass("alert-error");
-                        if(response.status == 409) {
+                        if(err.status == 409) {
                             $("#area-error").show().html("That area already exists");
                         } else {
-                            $("#area-error").show().html(response.responseText);
+                            $("#area-error").show().html(err.reason);
                         }
+
+                        return;
                     }
+
+                    // Reset the form
+                    $("#area-error").hide();
+                    $("#area-error").removeClass("alert-error").addClass("alert-success").html("Area successfully added!").show();
+                    $("#area-form input[type='text']").val("");
+                    $("#area-form input").closest(".control-group").removeClass("success");
+                    $("#area-form textarea").closest(".control-group").removeClass("success").find(".text-error").html("");
+
+                    that.getAreas(function (areas) {
+                        // Load the form
+                        that.areaFilterForm = new AreaFilterForm({
+                            template: _.template(AreaFilterFormTemplate)
+                        }).render();
+
+                        var options = [];
+                        options.push({val: '',label: 'Select One'});
+                        $.each(areas, function (index, value) {
+                            options.push({
+                                val: escape(value.doc.coordinates), 
+                                label: value.doc._id
+                            });
+                        });
+
+                        that.areaFilterForm.fields.filterareaselect.editor.setOptions(options);
+
+                        // Render the form
+                        $("#jumptoarea").html(that.areaFilterForm.el);
+                    });
                 });
             } else {
-                $.each(errors, function(key, value) {
+                $.each(errors, function (key, value) {
                     $("[name='" + key + "']").closest(".control-group").addClass("error");
                     $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                 });
             }
             return false;
         },
-        goToLocation: function(ev) {
+        goToLocation: function (ev) {
             var target = ev.target;
             var location = this.locations[$(target).parent().attr('id')];
             var geometry = location.feature.geometry;
 
             location.fireEvent('click');
-            map.panTo(new L.LatLng(geometry.coordinates[1], geometry.coordinates[0]));
+            map.panTo(new L.LatLng(
+                geometry.coordinates[1],
+                geometry.coordinates[0])
+            );
 
             // Hide the pane
             this.hidePane();
         },
-        handleFileSelect: function(ev) {
+        handleFileSelect: function (ev) {
             var file = ev.target.files[0]; // Get the files (We only allow one)
             this.resizeFile(file);
         },
-        onEachFeature: function(feature, layer) {
+        onEachFeature: function (feature, layer) {
             var geometry = feature.geometry;
             var properties = feature.properties;
             switch(properties.amenity) {
@@ -644,7 +714,7 @@ define([
             that.locations[properties._id] = layer;
 
         },
-        onMarkerClick: function(e) {
+        onMarkerClick: function (e) {
             // Remove that pesky marker
             map.removeLayer(newMarker);
 
@@ -658,12 +728,12 @@ define([
             $(".mainbtn").html("<img src='img/log.png' />").attr("id", "loclogbtn");
             that.loadLogView(properties);
         },
-        useCurrentLocation: function() {
+        useCurrentLocation: function () {
             // Remove that pesky marker
             map.removeLayer(newMarker);
 
             // Render the add location form
-            that.renderAddLocationForm(that.userLocation.lat, that.userLocation.lng, function() {
+            that.renderAddLocationForm(that.userLocation.lat, that.userLocation.lng, function () {
                 // Tell the user you're using their current location
                 $("#info").html("<p><i class='icon-globe'></i> Using your current Location.</p>");
             }); 
@@ -680,58 +750,53 @@ define([
             // Show location form
             $("#main").show();
         },
-        useMarkedLocation: function() {
+        useMarkedLocation: function () {
             // Render the add location form
-            that.renderAddLocationForm(that.newLocation.lat, that.newLocation.lon, function() {
+            that.renderAddLocationForm(that.newLocation.lat, that.newLocation.lon, function () {
                 // Tell the user you're using the marked location
                 $("#info").html("<p><i class='icon-globe'></i> Using the marked Location. <a id='usemylocation'>Use my current Location.</a></p>");
             });
         },
-        renderAddLocationForm: function(lat, lon, callback) {
-            // Create the areas collection
-            var areas = new AreasCollection();
+        renderAddLocationForm: function (lat, lon, callback) {
+            if(!this.area) {
+                var error = _.template(Error, {error: "Please navigate to a relief area first."});
+                $("#main").html(error);
+                if(callback) callback();
+                return false;
+            }
 
-            areas.fetch({
-                success: function(areas) {
-                    // Load the form
-                    form = new NewLocationForm({
-                        template: _.template(AddLocationTemplate),
-                        model: new LocationModel()
-                    }).render();
+            // Load the form
+            form = new NewLocationForm({
+                template: _.template(AddLocationTemplate),
+                model: new LocationModel()
+            }).render();
 
-                    var options = [];
+            // Render the form
+            $("#main").html(form.el);
 
-                    $.each(areas.models, function(index, value) {
-                        options[index] = {val: value.attributes._id, label: value.attributes._id}
+            // Set the fields
+            $("[name='lat']").val(lat);
+            $("[name='lon']").val(lon);
+            $("#area").html(this.area);
+
+            // Validate the form on change
+            form.on('change', function (form) {
+                $(".control-group").removeClass("error").addClass("success");
+                $("input").closest(".control-group").find(".text-error").html("");
+                var errors = form.commit();
+                if(errors) {
+                    $.each(errors, function (key, value) {
+                        $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
+                        $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
                     });
-
-                    form.fields.area.editor.setOptions(options);
-
-                    // Render the form
-                    $("#main").html(form.el);
-                    
-                    // Set the fields
-                    $("[name='lat']").val(lat);
-                    $("[name='lon']").val(lon);
-
-                    // Validate the form on change
-                    form.on('change', function(form) {
-                        $(".control-group").removeClass("error").addClass("success");
-                        $("input").closest(".control-group").find(".text-error").html("");
-                        var errors = form.commit();
-                        if(errors) {
-                            $.each(errors, function(key, value) {
-                                $("[name='" + key + "']").closest(".control-group").removeClass("success").addClass("error");
-                                $("[name='" + key + "']").closest(".control-group").find(".text-error").html("<small class='control-group error'>" + value.message + "</small>");
-                            });
-                        }
-                    });
-
-                    callback();
                 }
             });
+
+            if(callback) callback();
         },
-        mapLocations: function(url) {
+        mapLocations: function (filter) {
+            if(!window.area) return;
+
             var locations = new LocationsCollection();
             this.heatmapLayer = L.TileLayer.heatMap({
                 radius: {value: 20, absolute: false},
@@ -745,50 +810,115 @@ define([
                 }
             });
 
-            locations.fetch({
-                url: url,
-                success: function(locations) {
-                    that.markers = new Array();
-                    var heatData = new Array();
-                    _.each(locations.models, function(location) {
-                        var geometry = location.get('geoJSON').geometry,
-                            properties = location.get('geoJSON').properties;
+            this.getLocations(function (err, locations) {
+                that.markers = new Array();
+                var heatData = new Array();
 
-                        heatData.push({
-                            lon: geometry.coordinates[0], 
-                            lat: geometry.coordinates[1],
-                            value: properties.serviceCount
-                        });
+                if(filter) {
+                    locations.rows = locations.rows.filter(
+                        function (location) {
+                            return location.value.geoJSON.properties.amenity === filter;
+                        }
+                    );
+                }
 
-                        location.get('geoJSON').properties._id = location.get('_id');
-                        var marker = L.geoJson(location.get('geoJSON'), {
-                            _id: location.get('_id'),
-                            name: properties.name,
-                            type: properties.amenity,
-                            population: properties.population,
-                            notes: properties.notes,
-                            area: properties.area,
-                            latlng: new L.LatLng(geometry.coordinates[1], geometry.coordinates[0]),
-                            onEachFeature: that.onEachFeature
-                        });
+                _.each(locations.rows, function (location) {
+                    var geometry = location.value.geoJSON.geometry,
+                        properties = location.value.geoJSON.properties;
 
-                        marker.on('click', that.onMarkerClick);
-                        that.markers.push(marker);
+                    heatData.push({
+                        lon: geometry.coordinates[0],
+                        lat: geometry.coordinates[1],
+                        value: properties.serviceCount
                     });
 
+                    location.value.geoJSON.properties._id = location.value._id;
+                    var marker = L.geoJson(location.value.geoJSON, {
+                        _id: location.value._id,
+                        name: properties.name,
+                        type: properties.amenity,
+                        population: properties.population,
+                        notes: properties.notes,
+                        area: properties.area,
+                        latlng: new L.LatLng(
+                            geometry.coordinates[1],
+                            geometry.coordinates[0]
+                        ),
+                        onEachFeature: that.onEachFeature
+                    });
+
+                    marker.on('click', that.onMarkerClick);
+                    that.markers.push(marker);
+                });
+                if(that.markers.length > 0) {
                     that.locationsLayer = L.layerGroup(that.markers).addTo(map);
                     that.heatmapLayer.setData(heatData);
                     that.heatmapLayer.addTo(map);
                 }
+                that.stopLoading();
             });
         },
-        resizeFile: function(file) {
+        getAreas: function (callback) {
+            this.couchRest.fetch('areas',
+                {include_docs: true},
+                function (err, res) {
+                    var areas = res.rows.filter(function (val) {
+                        return val.id.search('_design') === -1;
+                    });
+
+                    callback(areas);
+                }
+            );
+        },
+        getLocations: function (callback) {
+            // Set the query params
+            var query = {
+                fun: {
+                    map: function (doc) {
+                        if(
+                            doc.geoJSON &&
+                            doc.geoJSON.properties.area === window.area
+                        ) {
+                            emit(doc, doc);
+                        }
+                    }
+                }
+            };
+
+            // Set the replication params
+            var rep = {
+                opts: {
+                    filter: function (doc) {
+                        if(doc.geoJSON)
+                            return doc.geoJSON.properties.area === window.area;
+                        return false;
+                    }
+                }
+            };
+
+            // Get the locations
+            this.couchRest.query('locations', query, rep, callback);
+        },
+        replicateLogs: function () {
+            // Set the replication params
+            var opts = {
+                filter: function (doc) {
+                    if(doc.area) return doc.area === window.area;
+                    return false;
+                }
+            };
+
+            // Get the event & service logs
+            this.couchRest.replicateFrom('logs', opts);
+            this.couchRest.replicateFrom('services', opts);
+        },
+        resizeFile: function (file) {
             var reader = new FileReader();
-            reader.onloadend = function() {
+            reader.onloadend = function () {
 
                 var tempImg = new Image();
                 tempImg.src = reader.result;
-                tempImg.onload = function() {
+                tempImg.onload = function () {
 
                     var MAX_WIDTH = 200;
                     var MAX_HEIGHT = 200;
@@ -818,8 +948,17 @@ define([
             }
             reader.readAsDataURL(file);
         },
-        returnFalse: function(ev) {
+        returnFalse: function (ev) {
             return false;
+        },
+        startLoading: function () {
+            $("#loading").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+        },
+        stopLoading: function () {
+            $("#loading").modal('hide');
         }
     });
 

@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'models/LocationModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "models/LocationModel"
 ], function($, _, Backbone, LocationModel){
 
     var LocationsCollection = Backbone.Collection.extend({

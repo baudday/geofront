@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'models/LogoutModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "models/LogoutModel"
 ], function($, _, Backbone, LogoutModel){
     var logoutModel = new LogoutModel();
 

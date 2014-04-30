@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'models/ServiceModel'
+    "jquery",
+    "underscore",
+    "backbone",
+    "models/ServiceModel"
 ], function($, _, Backbone, ServiceModel){
 
     var ServiceLogCollection = Backbone.Collection.extend({

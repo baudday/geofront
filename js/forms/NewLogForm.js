@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'backboneForms'
+    "jquery",
+    "underscore",
+    "backbone",
+    "backboneForms"
 ], function($, _, Backbone, backboneForms){
     var NewLogForm = Backbone.Form.extend({
         schema: {
@@ -19,7 +19,8 @@ define([
                     {val: 'Food', label: 'Food'},
                     {val: 'Logistics', label: 'Logistics'},
                     {val: 'Protection', label: 'Protection'},
-                    {val: 'CCM', label: 'CCM'}
+                    {val: 'CCM', label: 'CCM'},
+                    {val: 'Education', label: 'Education'}
                 ],
                 validators: [
                     'required'

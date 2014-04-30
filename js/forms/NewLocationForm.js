@@ -1,8 +1,8 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'backboneForms'
+    "jquery",
+    "underscore",
+    "backbone",
+    "backboneForms"
 ], function($, _, Backbone, backboneForms){
     var NewLocationForm = Backbone.Form.extend({
         schema: {
@@ -26,14 +26,6 @@ define([
                 validators: [
                     'required'
                 ] 
-            },
-            area: {
-                type: 'Select',
-                title: 'Relief Area',
-                options: [],
-                validators: [
-                    'required'
-                ]
             },
             amenity: {
                 type: 'Select',

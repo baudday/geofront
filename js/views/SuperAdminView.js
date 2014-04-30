@@ -1,16 +1,16 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'serializeForm',
-    'backboneForms',
-    'text!templates/account/SuperAdminTemplate.html',
-    'models/InstitutionModel',
-    'forms/NewInstitutionForm',
-    'text!templates/forms/AddInstitutionTemplate.html',
-    'models/AreaModel',
-    'forms/NewAreaForm',
-    'text!templates/forms/AddAreaTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "serializeForm",
+    "backboneForms",
+    "text!../../templates/account/SuperAdminTemplate.html",
+    "models/InstitutionModel",
+    "forms/NewInstitutionForm",
+    "text!../../templates/forms/AddInstitutionTemplate.html",
+    "models/AreaModel",
+    "forms/NewAreaForm",
+    "text!../../templates/forms/AddAreaTemplate.html"
 ], function($, _, Backbone, serializeForm, backboneForms, SuperAdminTemplate, InstitutionModel, 
             NewInstitutionForm, AddInstitutionTemplate, AreaModel, NewAreaForm, 
             AddAreaTemplate){

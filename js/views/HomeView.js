@@ -1,9 +1,9 @@
 define([
-    'jquery',
-    'underscore',
-    'backbone',
-    'bootstrap',
-    'text!templates/home/HomeTemplate.html'
+    "jquery",
+    "underscore",
+    "backbone",
+    "bootstrap",
+    "text!../../templates/home/HomeTemplate.html"
 ], function($, _, Backbone, Bootstrap, HomeTemplate){
 
     // The map
@@ -48,7 +48,7 @@ define([
             //         .bindPopup('Welcome to GeoRelief!').openPopup();
         },
         onLocationError: function(e) {
-            alert(e.message);
+            console.log(e.message);
         }
     });
 

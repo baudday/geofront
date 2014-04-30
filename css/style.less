@@ -37,6 +37,10 @@ a:link, a:hover, a:visited {
 
 /* ==================== Customizing Bootstrap here ==================== */
 
+.navbar-static-top {
+    margin-right: 0;
+}
+
 .navbar-inner {
     background: @grey;
     border-radius: 0px;
@@ -58,10 +62,6 @@ a:link, a:hover, a:visited {
     background-color: @grey;
     *background-color: @grey;
     text-shadow: none;
-    background-image: none;
-    background-image: none;
-    background-image: none;
-    background-image: none;
     background-image: none;
     background-repeat: none;
     border-color: none;
@@ -237,6 +237,10 @@ form .btn-primary {
     width: 220px;
 }
 
+.modal {
+    display: none;
+}
+
 /* ==================== End customizing Bootstrap elements ==================== */
 
 
@@ -266,7 +270,7 @@ form .btn-primary {
     position: fixed;
     top: 50px;
     left: 0;
-    z-index: -10;
+    z-index: -1;
 }
 
 .white {
@@ -284,7 +288,7 @@ form .btn-primary {
 }
 
 .info-pane {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 25%;
     width: 50%;
@@ -421,6 +425,40 @@ form .btn-primary {
     display: none;
 }
 
+.loading {
+    text-align: center;
+}
+
+.package {
+    width: 100%;
+}
+
+.tile-map {
+    width: 100%;
+    height: 200px;
+}
+
+#status {
+    width: 10px;
+    height: 10px;
+    display: block;
+    float: left;
+    position: absolute;
+    top: 50%;
+    margin-top: -5px;
+    border-radius: 5px;
+    background: #cccccc;
+}
+
+#version {
+  background: #ff0000;
+  color: #ffffff;
+  padding: 4px;
+  position: fixed;
+  right: 0;
+  z-index: 20;
+}
+
 /* ==================== Responsive Stuff ==================== */
 
 @media (max-width: 979px) {
@@ -510,6 +548,10 @@ form .btn-primary {
         line-height: 1;
     }
 
+    .nav-collapse {
+        -webkit-transform: none;
+    }
+
     #about {
         height: auto;
     }
@@ -527,3 +569,4 @@ form .btn-primary {
         width: 100%;
     }
 }
+
